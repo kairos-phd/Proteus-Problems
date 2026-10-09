@@ -1,6 +1,6 @@
 Bộ này gồm 25 chương trình độc lập: bài 1–16 và 23–31. Bài 17–22 đã được bỏ theo yêu cầu.
 
-Mỗi file dùng nguyên khung CodeWizard của bài 6: phần đầu từ /****, các include, biến cục bộ và toàn bộ phần khởi tạo trước while (1). Mã mới chỉ nằm dưới dòng // Declare your global variables here và bên trong while (1). Cấu hình chân, ngắt và ADC cần cho từng bài được áp dụng một lần trong khối da_khoitao ở đầu vòng lặp. Vì giữ nguyên mẫu, một số bài vẫn còn biến cục bộ maden/i không dùng; có thể xuất hiện cảnh báo unused variable.
+Mỗi file dùng định dạng CodeWizardAVR theo mẫu bai 6.c trên Google Drive: phần đầu /****, mega16.h, delay.h, các biến và hàm cần thiết, void main(void), khởi tạo ngoại vi, rồi while (1). Cấu hình chân, ngắt và ADC của từng bài được đặt trực tiếp trong phần khởi tạo trước vòng lặp; không còn khối da_khoitao. Các lệnh ghi thanh ghi điều khiển JTAG đã được bỏ theo yêu cầu; mã C không thiết lập fuse. Một số bài vẫn giữ maden/i của mẫu để dễ đối chiếu, nên có thể có cảnh báo unused variable.
 
 Mỗi lần tạo project, chỉ đưa MỘT file bài vào project. Dùng CodeVisionAVR, chip ATmega16, clock 8 MHz như mẫu. Đây là cú pháp CodeVisionAVR (mega16.h, interrupt, #asm), không phải mã để nạp trực tiếp bằng Arduino IDE hay avr-gcc.
 
@@ -23,7 +23,7 @@ Nguồn đã đọc:
 | 25, 28–29 | Nút tại PD0. |
 | 31 | Nút số 0–7 tại PD0–PD7; nút 8 tại PA0, nút 9 tại PA1; LED 7 đoạn đơn tại PORTC. Đây là cách nối được chọn vì đề chưa chỉ rõ chân. |
 
-LED 7 đoạn là loại anode chung, đoạn sáng mức 0; chọn digit mức 1 qua mạch điều khiển phù hợp với mẫu. Nút thông thường nhấn xuống GND; pull-up đã bật. Mã tắt JTAG bằng hai lần ghi MCUCSR liên tiếp để sử dụng PC2–PC5.
+LED 7 đoạn là loại anode chung, đoạn sáng mức 0; chọn digit mức 1 qua mạch điều khiển phù hợp với mẫu. Nút thông thường nhấn xuống GND; pull-up đã bật. Mã không tự tắt JTAG. Khi mô phỏng, cần dùng cấu hình ATmega16 cho phép PC2–PC5 hoạt động như GPIO; nếu giao diện JTAG đang chiếm các chân này thì LED hoặc nút trên các chân đó sẽ không hoạt động đúng. Việc chuẩn bị các file C không thay đổi cấu hình chip trong các project Proteus hay phần cứng thật.
 
 Với các bài ADC, cấp VCC và AVCC = 5 V, nối AREF = 5 V, nối chung GND. Hai đầu mỗi biến trở nối 5 V và GND. Giữ đúng nguồn tham chiếu 5 V vì công thức đo dựa trên giá trị đó.
 
@@ -59,7 +59,7 @@ Bài 24–26, 30 chọn t ban đầu 1 s và bước điều chỉnh 100 ms. Bà
 
 Các nút đọc bằng chương trình có lọc hai mẫu liên tiếp khoảng 20 ms và phát hiện lần nhấn. Riêng ngắt ngoài phản ứng với mỗi cạnh, đúng yêu cầu đề. Dùng nút Proteus không dội hoặc mạch chống dội ngoài cho PD2/PD3. Với cách nối nút xuống GND đang dùng, Falling xảy ra khi nhấn, Rising khi nhả; muốn Rising khi nhấn thì đổi mạch nút sang kéo xuống và nhấn lên VCC.
 
-Đã chạy kiểm thử trên máy tính cho cả 25 bài bằng mã C trích trực tiếp từ các file, chuyển riêng cú pháp đặc thù và giả lập thanh ghi/delay/ADC. Đã kiểm tra vòng đếm, chống lặp khi giữ nút, giới hạn thời gian, cạnh được cấu hình, toàn bộ 1024 mã ADC và toàn bộ 1024 tổ hợp nút của bài 31. Các phần nguyên gốc ngoài hai vùng cho phép được đối chiếu tự động với mẫu bài 6.
+Đã chạy kiểm thử trên máy tính cho cả 25 bài bằng mã C trích trực tiếp từ các file, chuyển riêng cú pháp đặc thù và giả lập thanh ghi/delay/ADC. Đã kiểm tra vòng đếm, chống lặp khi giữ nút, giới hạn thời gian, cạnh được cấu hình, toàn bộ 1024 mã ADC và toàn bộ 1024 tổ hợp nút của bài 31. Kiểm thử hiện chạy cả phần khởi tạo thật của mỗi bài trước các bước trong vòng lặp, và kiểm tra mã không ghi thanh ghi điều khiển JTAG.
 
 Chạy lại kiểm thử trên máy có Python 3 và GCC trong PATH:
 
@@ -71,3 +71,5 @@ Chưa biên dịch bằng CodeVisionAVR và chưa mô phỏng trong Proteus. Ki�
 
 Các file nguồn trên Google Drive được giữ nguyên.
 
+
+Bản sửa này được chuẩn bị từ commit 02fc84ebb030a621a59ab251ae0197ad62e238b9 của kairos-phd/Proteus-Problems. Khi cập nhật GitHub, thay thế 25 file bai_*.c, README.md và kiemtra.py bằng các file cùng tên trong gói; không cần thay đổi file đề bài.

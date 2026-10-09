@@ -93,7 +93,12 @@ assert(PORTC==(high<0?255:digits[high]));}'''
 }
 
 REGS = 'PORTA PORTB PORTC PORTD DDRA DDRB DDRC DDRD PINA PINB PINC PIND MCUCSR MCUCR GIFR GICR ADCSRA ADMUX'.split()
-BITS = dict(JTD=7, ISC01=1, ISC00=0, ISC11=3, ISC10=2, INTF0=6, INTF1=7, INT0=6, INT1=7, ADEN=7, ADSC=6, ADPS2=2, ADPS1=1)
+BITS = dict(ACD=7, JTD=7, ISC01=1, ISC00=0, ISC11=3, ISC10=2, INTF0=6, INTF1=7, INT0=6, INT1=7, ADEN=7, ADSC=6, ADPS2=2, ADPS1=1)
+
+for port in 'ABCD':
+    for bit in range(8):
+        BITS[f'DD{port}{bit}'] = bit
+        BITS[f'PORT{port}{bit}'] = bit
 
 def portable(text):
     text = re.sub(r'#include <(?:mega16|delay)\.h>', '', text)
@@ -105,13 +110,16 @@ def check_call(args):
     result = subprocess.run(args, capture_output=True, text=True)
     assert result.returncode == 0, result.stdout + result.stderr
 
-with tempfile.TemporaryDirectory(prefix='proteus_checks_') as temp:
+with tempfile.TemporaryDirectory(prefix='proteus_checks_', dir=ROOT) as temp:
     temp = Path(temp)
     for number, path in sorted(FILES.items()):
         code = path.read_text(encoding='utf-8')
         assert code.count('{') == code.count('}'), path.name
         globals_text = code.split('// Declare your global variables here\n', 1)[1].split('void main(void)', 1)[0]
-        body = code.split('while (1)\n{\n', 1)[1].rsplit('\n}\n}', 1)[0]
+        main_text = code.split('void main(void)\n{\n', 1)[1]
+        init_text, body = main_text.split('while (1)\n{\n', 1)
+        locals_text, init_text = init_text.split('// Input/Output Ports initialization', 1)
+        body = body.rsplit('\n}\n}', 1)[0]
         definitions = '\n'.join(f'#define {name} {value}' for name, value in BITS.items())
         registers = '\n'.join(f'unsigned char {name} = {255 if name.startswith("PIN") or name=="PORTC" else 0};' for name in REGS)
         shift = 4 if number in (9, 10) else 0
@@ -143,18 +151,18 @@ int shown(void){{int n=0;for(int k=0;k<4;k++){{assert(display_digits[k]>=0);n=n*
         syntax_file.write_text(support + '\n' + extra + '\n' + portable(code).replace('void main(void)', 'void firmware(void)'), encoding='utf-8')
         check_call([GCC, '-std=c99', '-fsyntax-only', str(syntax_file)])
         body = portable(body)
+        init_text = portable(init_text)
+        locals_text = locals_text.replace('    char i =', '    unsigned char i =')
         globals_text = portable(globals_text).replace('while (ADCSRA & (1 << ADSC));', 'ADCSRA &= ~(1 << ADSC);')
-        harness = support + '\n' + globals_text + '''
+        harness = support + '\n' + extra + '\n' + globals_text + locals_text + '\nvoid initialize(void){\n' + init_text + '\n}\n' + '''
 void step(void){
-static unsigned char maden[10]={0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};
-static char i=1;
 ''' + body + '''
 }
 void repeat(int n){while(n--)step();}
 void press(unsigned char mask){PIND=(unsigned char)~mask;step();step();}
 void release(void){PIND=255;step();step();}
 int main(void){
-''' + TESTS[number] + '\nputs("PASS");return 0;}\n'
+''' + 'MCUCSR=0x5A;initialize();\n' + TESTS[number] + '\nassert(MCUCSR==0x5A);\n' + '\nputs("PASS");return 0;}\n'
         c_path = temp / f'test_{number}.c'
         exe_path = temp / f'test_{number}.exe'
         c_path.write_text(harness, encoding='utf-8')
