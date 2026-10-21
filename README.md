@@ -1,19 +1,8 @@
-## Đề cương DC2DT29
+## Bộ bài thực hành và kiểm tra ban đầu
 
-Đã bổ sung [đề cương gốc và 88 lời giải cho 44 đề](BaiTapKiemTra/README.md), mỗi câu có một file CodeVisionAVR độc lập. Xem hướng dẫn đấu chân, các giả định và kiểm thử trong thư mục đó.
-
-## Bộ bài thực hành ban đầu
-
-Bộ này gồm 25 chương trình độc lập: bài 1–16 và 23–31. Bài 17–22 đã được bỏ theo yêu cầu.
-
-Mỗi file dùng định dạng CodeWizardAVR theo mẫu bai 6.c trên Google Drive: phần đầu /****, mega16.h, delay.h, các biến và hàm cần thiết, void main(void), khởi tạo ngoại vi, rồi while (1). Cấu hình chân, ngắt và ADC của từng bài được đặt trực tiếp trong phần khởi tạo trước vòng lặp; không còn khối da_khoitao. Các lệnh ghi thanh ghi điều khiển JTAG đã được bỏ theo yêu cầu; mã C không thiết lập fuse. Một số bài vẫn giữ maden/i của mẫu để dễ đối chiếu, nên có thể có cảnh báo unused variable.
+Bộ này gồm 25 bài và 44 đề kiểm tra
 
 Mỗi lần tạo project, chỉ đưa MỘT file bài vào project. Dùng CodeVisionAVR, chip ATmega16, clock 8 MHz như mẫu. Đây là cú pháp CodeVisionAVR (mega16.h, interrupt, #asm), không phải mã để nạp trực tiếp bằng Arduino IDE hay avr-gcc.
-
-Nguồn đã đọc:
-- [BaiTapThucHanh.docx](BaiTapThucHanh.docx)
-- [Code proteus: mẫu 6–12, 16, 23](https://drive.google.com/drive/folders/1ywxU_8SP5XalwFGuTg_DzMzSKEK8DARQ)
-- [Datasheet ATmega16A của Microchip](https://www.microchip.com/content/dam/mchp/documents/OTH/ProductDocuments/DataSheets/Atmel-8154-8-bit-AVR-ATmega16A_Datasheet.pdf), dùng đối chiếu bảng cạnh ngắt và ADC. Clock ADC được chọn 8 MHz / 64 = 125 kHz; dải khuyến nghị cho độ phân giải 10 bit là 50–200 kHz.
 
 | Nhóm bài | Nối chân |
 |---|---|
