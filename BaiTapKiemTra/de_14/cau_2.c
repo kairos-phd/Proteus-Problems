@@ -24,99 +24,58 @@ Data Stack size         : 256
 #include <delay.h>
 
 // Declare your global variables here
-// DC2DT29 - De 14, Cau 2. Kind: auto_period_dec
-// Mot file cau_1.c hoac cau_2.c cho moi project. Xem ../README.md.
-unsigned char trangthai_ngat;
-unsigned int nhan;
-#define SO_NUT 2
-#define LAP_NUT_MS 200
-#define MAT_NA_LAP 3U
-#define SO_LED 4
+// de_14 - Cau 2. Xem ../README.md.
+volatile unsigned int dem = 0, thoigian = 1000, dem_ms = 0;
+volatile unsigned char chay = 0, vitriquet = 0;
+unsigned char sohienthi[4];
 unsigned char ma7doan[10] =
 {
     0xC0, 0xF9, 0xA4, 0xB0, 0x99,
     0x92, 0x82, 0xF8, 0x80, 0x90
 };
-volatile unsigned int dem = 0;
-volatile unsigned int thoigian = 1000, dem_ms;
-volatile unsigned char chay = 0;
-unsigned char sohienthi[4], daucham, vitriquet;
-volatile unsigned char kenh;
-unsigned char dophangiai, donhietdo;
+unsigned char trangthai_ngat;
+unsigned int nhan;
+unsigned int nut_on;
+unsigned char locnut[2];
+unsigned int giu_ms[2];
 
-unsigned int docchan(void)
-{
-    return (unsigned char)~PINB & 3U;
-}
-
-/* Active-low buttons: 20 consecutive 1 ms samples; independent debounce.
-   A held key repeats only when LAP_NUT_MS is nonzero. */
-unsigned char nut_on[10], locnut[10];
-unsigned int giu_ms[10];
-unsigned int nut_giu;
+/* Loc tung nut trong 20 ms; nut giu chi lap khi de yeu cau. */
 unsigned int docnut(void)
 {
-#if SO_NUT > 0
     unsigned char i;
-    unsigned int raw, bit, events;
-    raw = docchan();
-    events = 0;
-    for (i = 0; i < SO_NUT; ++i)
+    unsigned int nut, bit, canh = 0;
+    nut = (unsigned char)~PINB & 3U;
+    for (i = 0; i < 2; i++)
     {
         bit = 1U << i;
-        if (((raw & bit) != 0) != nut_on[i])
+        if ((nut ^ nut_on) & bit)
         {
-            if (++locnut[i] >= 20)
+            if (++locnut[i] == 20)
             {
                 locnut[i] = 0;
-                nut_on[i] = (raw & bit) != 0;
+                nut_on ^= bit;
                 giu_ms[i] = 0;
-                if (nut_on[i]) events |= bit;
+                if (nut_on & bit) canh |= bit;
             }
         }
         else
         {
             locnut[i] = 0;
-#if LAP_NUT_MS > 0
-            if (nut_on[i] && (MAT_NA_LAP & bit))
-            {
-                if (++giu_ms[i] >= LAP_NUT_MS)
+            if (nut_on & bit)
+                if (++giu_ms[i] == 200)
                 {
                     giu_ms[i] = 0;
-                    events |= bit;
+                    canh |= bit;
                 }
-            }
-#endif
         }
     }
-    nut_giu = 0;
-    for (i = 0; i < SO_NUT; ++i)
-        if (nut_on[i]) nut_giu |= 1U << i;
-    return events;
-#else
-    return 0;
-#endif
-}
-
-void doithoigian(signed char direction)
-{
-    if (direction > 0)
-    {
-        if (thoigian <= 1900) thoigian += 100;
-        else thoigian = 2000;
-    }
-    else
-    {
-        if (thoigian >= 200) thoigian -= 100;
-        else thoigian = 100;
-    }
-    /* Preserve phase: repeated speed changes must not starve movement. */
+    return canh;
 }
 
 void xulynut(unsigned int keys)
 {
-    if (keys == 1) doithoigian(1);
-    if (keys == 2) doithoigian(-1);
+    if (keys == 1 && thoigian < 2000) thoigian += 100;
+    if (keys == 2 && thoigian > 100) thoigian -= 100;
 }
 
 void demthoigian(unsigned int milliseconds)
@@ -130,32 +89,27 @@ void demthoigian(unsigned int milliseconds)
     }
 }
 
-void capnhatled(void)
-{
-    unsigned char i;
-    unsigned int number;
-    number = dem;
-    for (i = SO_LED; i > 0; --i)
-    {
-        sohienthi[i-1] = number % 10;
-        number /= 10;
-    }
-}
 void quetled(void)
 {
     unsigned char pattern;
     /* Blank every digit before changing ma7doan to prevent ghosting. */
     PORTA &= 0x0F;
     pattern = ma7doan[sohienthi[vitriquet]];
-    if (daucham & (1U << vitriquet)) pattern &= 0x7F;
     PORTC = pattern;
     PORTA |= 1U << (vitriquet + 4);
-    if (++vitriquet >= SO_LED) vitriquet = 0;
+    if (++vitriquet >= 4) vitriquet = 0;
 }
 
 void hienthi(void)
 {
-    capnhatled();
+    unsigned char i;
+    unsigned int number;
+    number = dem;
+    for (i = 4; i > 0; --i)
+    {
+        sohienthi[i-1] = number % 10;
+        number /= 10;
+    }
 }
 
 interrupt [EXT_INT0] void ext_int0_isr(void)
@@ -278,13 +232,10 @@ void main(void)
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
     // Program variables initialization
-    dem = 0; thoigian = 1000; dem_ms = 0; chay = 0;
-    nut_giu = 0; daucham = 0; vitriquet = 0;
-    kenh = 0; dophangiai = 0; donhietdo = 0;
-    for (i = 0; i < 10; ++i)
-    {
-        nut_on[i] = 0; locnut[i] = 0; giu_ms[i] = 0;
-    }
+    dem = 0; thoigian = 1000; dem_ms = 0;
+    chay = 0; vitriquet = 0;
+    nut_on = 0;
+    for (i = 0; i < 2; i++) { locnut[i] = 0; giu_ms[i] = 0; }
     hienthi();
 
     // Global interrupt enable

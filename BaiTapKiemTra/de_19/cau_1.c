@@ -24,109 +24,44 @@ Data Stack size         : 256
 #include <delay.h>
 
 // Declare your global variables here
-// DC2DT29 - De 19, Cau 1. Kind: single_clamp
-// Mot file cau_1.c hoac cau_2.c cho moi project. Xem ../README.md.
-unsigned char trangthai_ngat;
-unsigned int nhan;
-#define SO_NUT 2
-#define LAP_NUT_MS 0
-#define MAT_NA_LAP 3U
-#define SO_LED 4
+// de_19 - Cau 1. Xem ../README.md.
+unsigned int dem = 6;
 unsigned char ma7doan[10] =
 {
     0xC0, 0xF9, 0xA4, 0xB0, 0x99,
     0x92, 0x82, 0xF8, 0x80, 0x90
 };
-volatile unsigned int dem = 6;
-volatile unsigned int thoigian = 1000, dem_ms;
-volatile unsigned char chay = 0;
-unsigned char sohienthi[4], daucham, vitriquet;
-volatile unsigned char kenh;
-unsigned char dophangiai, donhietdo;
+unsigned int nhan;
+unsigned int nut_on;
+unsigned char locnut[2];
 
-unsigned int docchan(void)
-{
-    return (unsigned char)~PINA & 3U;
-}
-
-/* Active-low buttons: 20 consecutive 1 ms samples; independent debounce.
-   A held key repeats only when LAP_NUT_MS is nonzero. */
-unsigned char nut_on[10], locnut[10];
-unsigned int giu_ms[10];
-unsigned int nut_giu;
+/* Loc tung nut trong 20 ms; nut giu chi lap khi de yeu cau. */
 unsigned int docnut(void)
 {
-#if SO_NUT > 0
     unsigned char i;
-    unsigned int raw, bit, events;
-    raw = docchan();
-    events = 0;
-    for (i = 0; i < SO_NUT; ++i)
+    unsigned int nut, bit, canh = 0;
+    nut = (unsigned char)~PINA & 3U;
+    for (i = 0; i < 2; i++)
     {
         bit = 1U << i;
-        if (((raw & bit) != 0) != nut_on[i])
+        if ((nut ^ nut_on) & bit)
         {
-            if (++locnut[i] >= 20)
+            if (++locnut[i] == 20)
             {
                 locnut[i] = 0;
-                nut_on[i] = (raw & bit) != 0;
-                giu_ms[i] = 0;
-                if (nut_on[i]) events |= bit;
+                nut_on ^= bit;
+                if (nut_on & bit) canh |= bit;
             }
         }
-        else
-        {
-            locnut[i] = 0;
-#if LAP_NUT_MS > 0
-            if (nut_on[i] && (MAT_NA_LAP & bit))
-            {
-                if (++giu_ms[i] >= LAP_NUT_MS)
-                {
-                    giu_ms[i] = 0;
-                    events |= bit;
-                }
-            }
-#endif
-        }
+        else locnut[i] = 0;
     }
-    nut_giu = 0;
-    for (i = 0; i < SO_NUT; ++i)
-        if (nut_on[i]) nut_giu |= 1U << i;
-    return events;
-#else
-    return 0;
-#endif
-}
-
-void doithoigian(signed char direction)
-{
-    if (direction > 0)
-    {
-        if (thoigian <= 1900) thoigian += 100;
-        else thoigian = 2000;
-    }
-    else
-    {
-        if (thoigian >= 200) thoigian -= 100;
-        else thoigian = 100;
-    }
-    /* Preserve phase: repeated speed changes must not starve movement. */
+    return canh;
 }
 
 void xulynut(unsigned int keys)
 {
     if (keys == 1 && dem < 9) ++dem;
     if (keys == 2 && dem > 0) --dem;
-}
-
-void demthoigian(unsigned int milliseconds)
-{
-    (void)milliseconds;
-}
-
-void hienthi(void)
-{
-    PORTC = ma7doan[dem];
 }
 
 void main(void)
@@ -239,14 +174,10 @@ void main(void)
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
     // Program variables initialization
-    dem = 6; thoigian = 1000; dem_ms = 0; chay = 0;
-    nut_giu = 0; daucham = 0; vitriquet = 0;
-    kenh = 0; dophangiai = 0; donhietdo = 0;
-    for (i = 0; i < 10; ++i)
-    {
-        nut_on[i] = 0; locnut[i] = 0; giu_ms[i] = 0;
-    }
-    hienthi();
+    dem = 6;
+    nut_on = 0;
+    for (i = 0; i < 2; i++) locnut[i] = 0;
+    PORTC = ma7doan[dem];
 
     // Global interrupt enable
     #asm("sei")
@@ -254,13 +185,8 @@ void main(void)
 while (1)
 {
     delay_ms(1);
-    /* Atomic access to shared 16-bit counters and the scan buffer on an 8-bit MCU. */
-    trangthai_ngat = SREG;
-    #asm("cli")
     nhan = docnut();
     xulynut(nhan);
-    demthoigian(1);
-    hienthi();
-    SREG = trangthai_ngat;
+    PORTC = ma7doan[dem];
 }
 }

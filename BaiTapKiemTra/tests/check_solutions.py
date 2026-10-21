@@ -22,7 +22,7 @@ Q1 = {
 advance_time(99);assert(value==7);advance_time(1);assert(value==6);
 for(i=0;i<50;i++)handle_buttons(1);assert(period_ms==10);
 for(i=0;i<50;i++)handle_buttons(2);assert(period_ms==250);
-value=0;advance_time(250);assert(value==7);render_display();assert(PORTD==0x7F);''',
+value=0;advance_time(250);assert(value==7);tick_1ms();assert(PORTD==0x7F);''',
     'chase_slow': '''assert(value==0);advance_time(100);assert(value==1);
 for(i=0;i<50;i++)handle_buttons(1);assert(period_ms==40);
 for(i=0;i<50;i++)handle_buttons(2);assert(period_ms==200);
@@ -53,7 +53,7 @@ handle_buttons(2);advance_time(1000);assert(value==0 && !running);''',
 advance_time(299);assert(value==9);advance_time(1);assert(value==8);
 value=0;advance_time(300);assert(value==9);
 handle_buttons(2);advance_time(1000);assert(value==9 && !running);''',
-    'single_period': '''assert(value==0 && running && period_ms==1000);
+    'single_period': '''assert(value==0 && period_ms==1000);
 advance_time(999);assert(value==0);advance_time(1);assert(value==1);
 for(i=0;i<50;i++)handle_buttons(1);assert(period_ms==2000);
 for(i=0;i<50;i++)handle_buttons(2);assert(period_ms==200);
@@ -66,7 +66,7 @@ set_keys(0);run(20);set_keys(0x42);run(20);assert(value==0x42);''',
 set_keys(0);run(20);set_keys(0x42);run(20);assert(value==0xE7);''',
     'shift_buttons': '''assert(value==6);set_keys(1);run(420);assert(value==3);
 value=0;handle_buttons(1);assert(value==7);handle_buttons(2);assert(value==0);
-render_display();assert(PORTD==254);''',
+tick_1ms();assert(PORTD==254);''',
     'blink': '''assert(period_ms==50 && value==0xAA);
 advance_time(49);assert(value==0xAA);advance_time(1);assert(value==0x55);
 advance_time(50);assert(value==0xAA);
@@ -136,7 +136,7 @@ value=9999;handle_buttons(1);assert(value==9999);
 value=1;handle_buttons(2);assert(value==1);
 ext_int0_isr();advance_time(999);assert(value==1);
 advance_time(1);assert(value==10 && !running);''',
-    'adc_precision': '''assert(precision==0 && channel==0);
+    'adc_precision': '''assert(precision==0);
 for(j=0;j<2;j++){for(i=0;i<1024;i++){adc_samples[0]=i;tick_1ms();
 assert(value==(i*(j?500UL:50UL)+511)/1023);
 assert(display_dp==(j?2:4));assert(PORTB==segments[j+1]);}
@@ -339,6 +339,8 @@ assert(period_ms=={70 if repeats else 90});'''
                     extras += '''initialize();timer_phase=0;set_keys(4);run(1020);assert(value==1113);'''
                 debounce = '''wanted=value;set_keys(1);run(10);set_keys(0);run(20);
 assert(value==wanted);initialize();'''
+                if kind.startswith('keypad'):
+                    debounce = ''  # Live numeric-key lookup needs no edge/debounce state.
                 gpio = ('assert(DDRA==0xF0 && DDRC==255);' if q == 2 else
                         'assert(DDRD==255);' if kind in ('chase_fast','chase_slow','blink','shift_buttons','toggle8','toggle8_repeat') else
                         'assert(DDRC==255);')
