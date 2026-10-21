@@ -7,10 +7,11 @@ http://www.hpinfotech.com
 
 Project :
 Version :
-Date    : 8/24/2026
+Date    : 10/21/2026
 Author  :
 Company :
 Comments:
+
 
 Chip type               : ATmega16
 Program type            : Application
@@ -20,6 +21,7 @@ External RAM size       : 0
 Data Stack size         : 256
 *******************************************************/
 
+
 #include <mega16.h>
 #include <delay.h>
 
@@ -27,16 +29,15 @@ Data Stack size         : 256
 
 void main(void)
 {
-    unsigned char ma7doan[10] =
+    unsigned char maden[10]=
     {
-        0xC0, 0xF9, 0xA4, 0xB0, 0x99,
-        0x92, 0x82, 0xF8, 0x80, 0x90
+        0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8, 0x80, 0x90
     };
     unsigned char so = 0;
-    unsigned char i;
-    unsigned int nut;
 
     #asm("cli")
+
+    // Declare your local variables here
 
     // Input/Output Ports initialization
     // Port A initialization
@@ -142,19 +143,34 @@ void main(void)
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
     // Program variables initialization
-    PORTC = ma7doan[so];
+    PORTC = maden[so];
 
     // Global interrupt enable
     #asm("sei")
 
 while (1)
 {
-    delay_ms(1);
-
-    nut = (unsigned char)~PINA;
-    nut |= ((unsigned int)((unsigned char)~PINB & 3)) << 8;
-    for (i = 0; i < 10; i++)
-        if (nut & (1U << i)) so = i;
-    PORTC = ma7doan[so];
+    // Place your code here
+    if (PINB.1 == 0)
+        so = 9;
+    else if (PINB.0 == 0)
+        so = 8;
+    else if (PINA.7 == 0)
+        so = 7;
+    else if (PINA.6 == 0)
+        so = 6;
+    else if (PINA.5 == 0)
+        so = 5;
+    else if (PINA.4 == 0)
+        so = 4;
+    else if (PINA.3 == 0)
+        so = 3;
+    else if (PINA.2 == 0)
+        so = 2;
+    else if (PINA.1 == 0)
+        so = 1;
+    else if (PINA.0 == 0)
+        so = 0;
+    PORTC = maden[so];
 }
 }

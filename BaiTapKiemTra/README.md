@@ -6,7 +6,7 @@ Nguồn tải: https://docs.google.com/document/d/1mh2D75xNiBHrTItzRjf3hnnpLvd3h
 
 ## Tạo project
 
-Toàn bộ 88 file theo định dạng của 25 bài `bai_*.c` ở thư mục gốc: giữ nguyên đầy đủ khối chú thích CodeWizardAVR (kể cả thông số chip, clock, memory model, RAM và stack), khai báo các biến điều khiển trong `main` như mẫu người dùng cung cấp; chỉ biến dùng chung với ngắt và hàm hiển thị/ADC cần thiết nằm ngoài `main`. Toàn bộ 15 mục khởi tạo ngoại vi và `while (1)` nằm ngay trong `main`. Có đủ cả phần cấu hình các ngoại vi không sử dụng. Các bit cấu hình dùng tên thanh ghi/bit như mẫu; giá trị GPIO, timer, ngắt và ADC vẫn theo từng câu. Không còn hàm bọc `initialize()` hoặc `tick_1ms()` trong mã nạp MCU.
+Toàn bộ 88 file theo ba mẫu CodeVisionAVR mới được cung cấp (header ngày 10/21/2026): giữ nguyên đầy đủ khối chú thích CodeWizardAVR (kể cả thông số chip, clock, memory model, RAM và stack), khai báo các biến điều khiển trong `main` như mẫu người dùng cung cấp; chỉ biến dùng chung với ngắt và hàm hiển thị/ADC cần thiết nằm ngoài `main`. Toàn bộ 15 mục khởi tạo ngoại vi và `while (1)` nằm ngay trong `main`. Có đủ cả phần cấu hình các ngoại vi không sử dụng. Các bit cấu hình dùng tên thanh ghi/bit như mẫu; giá trị GPIO, timer, ngắt và ADC vẫn theo từng câu. Không còn hàm bọc `initialize()` hoặc `tick_1ms()` trong mã nạp MCU.
 
 Dùng **CodeVisionAVR, ATmega16, clock 8 MHz**. Mỗi project chỉ thêm **một** file `cau_1.c` hoặc `cau_2.c`. Mỗi file đã có đầy đủ khởi tạo, hàm, chương trình chính và ngắt cần dùng; không cần thêm file C nào khác. Đây là mã CodeVisionAVR (`mega16.h`, `delay.h`, `interrupt`, `#asm`), không biên dịch trực tiếp bằng avr-gcc hoặc Arduino IDE.
 
@@ -42,7 +42,7 @@ Ngắt Falling kích hoạt khi nhấn nút kéo lên; Rising kích hoạt khi n
 
 ## Quy tắc và giả định
 
-- Đọc nút trực tiếp bằng `PINx.n`, dùng cờ `nut1`, `nut2` để chờ nhả đúng mẫu người dùng cung cấp. Không có bộ lọc 20 ms hay bộ xử lý nút tổng quát. Chỉ thêm bộ đếm giữ nút ở những câu yêu cầu lặp khi giữ: 200 ms nếu đề chưa cho chu kỳ, hoặc đúng 200/300 ms khi đề nêu rõ. Hai nút được xử lý theo thứ tự các khối `if`; START/STOP đồng thời ưu tiên STOP. Với bàn phím số, đọc các nút trực tiếp và chọn số lớn nhất; bài 10 nút giữ số khi nhả, bài 9 nút về 0 khi không nhấn.
+- Dùng bảng `maden`, biến cục bộ đơn giản và lệnh `if` trong `while (1)`. Bài START/STOP đọc mức nút trực tiếp. Bài một LED 7 đoạn tăng/giảm và chờ nhả dùng `delay_ms(20)`, kiểm tra lại nút, rồi `while (PINx.n == 0);`. Bàn phím số dùng chuỗi `if/else if` từ 9 xuống 0, đúng mẫu mới; bài 10 nút giữ số khi nhả, bài 9 nút về 0. Bài giữ nút lặp 200/300 ms mà không có công việc nền dùng delay trực tiếp. Với bài quét nhiều digit hoặc có bộ đếm chạy song song, giữ cách đọc không chặn để LED vẫn quét và thời gian vẫn chạy khi giữ nút. Mỗi cổng chỉ có một cấu hình cuối cùng, không thêm phần cấu hình tay bị CodeWizard ghi đè. Kiểm tra giới hạn số trước khi truy cập `maden[so]`.
 
 - Câu 1 LED chạy: tần số được hiểu là tần số chuyển sang LED kế tiếp. Ban đầu mỗi bước 100 ms, thay đổi 10 ms/lần. Trái → phải giới hạn 10–250 ms (100–4 Hz), phải → trái 40–200 ms (25–5 Hz). Đề 01 không yêu cầu giữ nút để thay đổi liên tục nên dùng một lần mỗi nhấn; đề 15 và 29 có lặp khi giữ.
 - Nhấp nháy xen kẽ: chu kỳ đầy đủ ban đầu 100 ms, mỗi nửa chu kỳ 50 ms. Vì đề không cho giới hạn/bước chỉnh, chọn nửa chu kỳ 5–1000 ms, chỉnh 5 ms/lần (chu kỳ đầy đủ 10–2000 ms).
@@ -62,7 +62,7 @@ Các câu nêu Timer 0 đều dùng **Normal mode và ngắt tràn**:
 
 ISR cộng preload vào `TCNT0` để bù phần độ trễ đã trôi qua theo tick timer; không dùng delay trong ngắt. Các câu yêu cầu Timer 2 dùng Normal mode, prescaler 64, preload 6: mỗi 2 ms chuyển một digit, chu kỳ quét 4 digit là 8 ms (125 Hz). Tắt mọi digit trước khi đổi dữ liệu đoạn để tránh bóng mờ. Hàm hiển thị lấy trực tiếp số cần quét, không dùng bộ đệm digit trung gian. Các thao tác vòng chính với số 16 bit dùng chung với ngắt được bảo vệ bằng lưu SREG, tắt ngắt rồi khôi phục SREG; delay nằm ngoài vùng tắt ngắt.
 
-Những câu **không yêu cầu timer** dùng vòng chính `delay_ms(1)` cộng thời gian xử lý; thời gian quét LED, tự động đếm và lặp nút ở các câu này là xấp xỉ. Các giá trị timer ở bảng là chính xác theo số tick với clock danh nghĩa 8 MHz; độ chính xác dao động, độ trễ ISR và thời gian thực vẫn cần đo trong Proteus hoặc trên mạch thật.
+Những câu **không yêu cầu timer** dùng delay phần mềm theo từng câu: bài một digit START/STOP đếm các bước 10 ms; bài giữ nút đơn giản dùng 200/300 ms; các bài cần xử lý nền tiếp tục dùng bước 1 ms; thời gian quét LED, tự động đếm và lặp nút ở các câu này là xấp xỉ. Các giá trị timer ở bảng là chính xác theo số tick với clock danh nghĩa 8 MHz; độ chính xác dao động, độ trễ ISR và thời gian thực vẫn cần đo trong Proteus hoặc trên mạch thật.
 
 ## Kiểm thử
 
@@ -73,7 +73,7 @@ python BaiTapKiemTra/tests/check_solutions.py
 python kiemtra.py
 ```
 
-Bộ kiểm thử mới xác nhận đủ 88 file, thích nghi cú pháp riêng của CodeVision, biên dịch từng chương trình kiểm thử bằng GCC (`-Wall -Wextra -Werror`, UndefinedBehaviorSanitizer), rồi chạy kiểm tra hành vi trên mã C thật: khởi tạo và thân vòng lặp thật, cờ nhấn/nhả, giới hạn, ngắt, 0.5 s theo tick timer, quét Timer 2, các tổ hợp nút số và toàn bộ 1024 mã ADC. Bộ chạy trích trực tiếp phần khởi tạo và thân `while (1)` trong `main`, tương tự `kiemtra.py` của 25 bài gốc. Khi chạy trên host, bộ thích nghi thay cú pháp vendor (gồm cách đọc `PINx.n`) và chuyển đổi ADC phần cứng; không thay thuật toán của lời giải. Kiểm tra thao tác bằng mức chân và vòng lặp thật, không gọi bộ xử lý nút hoặc bộ đếm thời gian giả. Thư viện tiêu chuẩn Python là đủ; không cần package ngoài. File tạm được tạo ngoài checkout và tự xóa.
+Bộ kiểm thử mới xác nhận đủ 88 file, thích nghi cú pháp riêng của CodeVision, biên dịch từng chương trình kiểm thử bằng GCC (`-Wall -Wextra -Werror`, UndefinedBehaviorSanitizer), rồi chạy kiểm tra hành vi trên mã C thật: khởi tạo và thân vòng lặp thật, nhấn/nhả, delay phần mềm, giới hạn, ngắt, 0.5 s theo tick timer, quét Timer 2, các tổ hợp nút số và toàn bộ 1024 mã ADC. Bộ chạy trích trực tiếp phần khởi tạo và thân `while (1)` trong `main`, tương tự `kiemtra.py` của 25 bài gốc. Khi chạy trên host, bộ thích nghi thay cú pháp vendor (gồm cách đọc `PINx.n`), mô phỏng nhả nút để kết thúc vòng chờ, đếm delay và mô phỏng chuyển đổi ADC phần cứng; không thay thuật toán của lời giải. Kiểm tra thao tác bằng mức chân và vòng lặp thật, không gọi bộ xử lý nút hoặc bộ đếm thời gian giả. Thư viện tiêu chuẩn Python là đủ; không cần package ngoài. File tạm được tạo ngoài checkout và tự xóa.
 
 Đã chạy **88/88** chương trình mới và **25/25** bài thực hành cũ thành công. **Chưa biên dịch bằng CodeVisionAVR, chưa tạo HEX, chưa mô phỏng Proteus.** Kiểm thử host không xác nhận kích thước kiểu `int` của AVR, mã máy, dòng điện, đấu dây, chống dội vật lý hoặc thời gian trên MCU. Để hoàn tất kiểm chứng phần cứng: biên dịch từng file bằng CodeVisionAVR, nạp HEX vào ATmega16 8 MHz với fuse JTAG phù hợp, rồi thử các yêu cầu tương ứng và đo thời gian.
 

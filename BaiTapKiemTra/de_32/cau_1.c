@@ -7,10 +7,11 @@ http://www.hpinfotech.com
 
 Project :
 Version :
-Date    : 8/24/2026
+Date    : 10/21/2026
 Author  :
 Company :
 Comments:
+
 
 Chip type               : ATmega16
 Program type            : Application
@@ -19,6 +20,7 @@ Memory model            : Small
 External RAM size       : 0
 Data Stack size         : 256
 *******************************************************/
+
 
 #include <mega16.h>
 #include <delay.h>
@@ -36,6 +38,8 @@ void main(void)
     unsigned int giu2 = 0;
 
     #asm("cli")
+
+    // Declare your local variables here
 
     // Input/Output Ports initialization
     // Port A initialization
@@ -148,9 +152,11 @@ void main(void)
 
 while (1)
 {
+    // Place your code here
     if (PINC.0 == 0 && (nut1 == 0 || giu1 >= 200))
     {
-        if (t > 40) t -= 10;
+        if (t > 40)
+            t -= 10;
         nut1 = 1;
         giu1 = 0;
     }
@@ -160,11 +166,12 @@ while (1)
         nut1 = 0;
         giu1 = 0;
     }
-    if (nut1) giu1++;
-
+    if (nut1)
+        giu1++;
     if (PINC.1 == 0 && (nut2 == 0 || giu2 >= 200))
     {
-        if (t < 200) t += 10;
+        if (t < 200)
+            t += 10;
         nut2 = 1;
         giu2 = 0;
     }
@@ -174,16 +181,17 @@ while (1)
         nut2 = 0;
         giu2 = 0;
     }
-    if (nut2) giu2++;
-
+    if (nut2)
+        giu2++;
     delay_ms(1);
 
-    dem += 1;
+    dem++;
     if (dem >= t)
     {
         dem = 0;
         led = led << 1;
-        if (led == 0) led = 0x01;
+        if (led == 0)
+            led = 0x01;
         PORTD = (unsigned char)~led;
     }
 }

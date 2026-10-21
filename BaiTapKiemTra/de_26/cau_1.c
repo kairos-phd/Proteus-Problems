@@ -7,10 +7,11 @@ http://www.hpinfotech.com
 
 Project :
 Version :
-Date    : 8/24/2026
+Date    : 10/21/2026
 Author  :
 Company :
 Comments:
+
 
 Chip type               : ATmega16
 Program type            : Application
@@ -20,6 +21,7 @@ External RAM size       : 0
 Data Stack size         : 256
 *******************************************************/
 
+
 #include <mega16.h>
 #include <delay.h>
 
@@ -28,12 +30,10 @@ Data Stack size         : 256
 void main(void)
 {
     unsigned char led = 0x40;
-    unsigned char nut1 = 0;
-    unsigned int giu1 = 0;
-    unsigned char nut2 = 0;
-    unsigned int giu2 = 0;
 
     #asm("cli")
+
+    // Declare your local variables here
 
     // Input/Output Ports initialization
     // Port A initialization
@@ -146,38 +146,23 @@ void main(void)
 
 while (1)
 {
-    if (PINA.1 == 0 && (nut1 == 0 || giu1 >= 200))
+    // Place your code here
+    if (PINA.1 == 0)
     {
         led = led >> 1;
-        if (led == 0) led = 0x80;
-        nut1 = 1;
-        giu1 = 0;
+        if (led == 0)
+            led = 0x80;
+        PORTD = (unsigned char)~led;
+        delay_ms(200);
     }
 
-    if (PINA.1 == 1)
-    {
-        nut1 = 0;
-        giu1 = 0;
-    }
-    if (nut1) giu1++;
-
-    if (PINA.2 == 0 && (nut2 == 0 || giu2 >= 200))
+    if (PINA.2 == 0)
     {
         led = led << 1;
-        if (led == 0) led = 0x01;
-        nut2 = 1;
-        giu2 = 0;
+        if (led == 0)
+            led = 0x01;
+        PORTD = (unsigned char)~led;
+        delay_ms(200);
     }
-
-    if (PINA.2 == 1)
-    {
-        nut2 = 0;
-        giu2 = 0;
-    }
-    if (nut2) giu2++;
-
-    delay_ms(1);
-
-    PORTD = (unsigned char)~led;
 }
 }

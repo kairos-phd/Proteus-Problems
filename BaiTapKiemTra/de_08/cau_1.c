@@ -7,10 +7,11 @@ http://www.hpinfotech.com
 
 Project :
 Version :
-Date    : 8/24/2026
+Date    : 10/21/2026
 Author  :
 Company :
 Comments:
+
 
 Chip type               : ATmega16
 Program type            : Application
@@ -20,6 +21,7 @@ External RAM size       : 0
 Data Stack size         : 256
 *******************************************************/
 
+
 #include <mega16.h>
 #include <delay.h>
 
@@ -27,18 +29,17 @@ Data Stack size         : 256
 
 void main(void)
 {
-    unsigned char ma7doan[10] =
+    unsigned char maden[10]=
     {
-        0xC0, 0xF9, 0xA4, 0xB0, 0x99,
-        0x92, 0x82, 0xF8, 0x80, 0x90
+        0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8, 0x80, 0x90
     };
     unsigned char so = 9;
     unsigned char chay = 0;
-    unsigned int dem = 0;
-    unsigned char nut1 = 0;
-    unsigned char nut2 = 0;
+    unsigned char dem = 0;
 
     #asm("cli")
+
+    // Declare your local variables here
 
     // Input/Output Ports initialization
     // Port A initialization
@@ -144,45 +145,36 @@ void main(void)
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
     // Program variables initialization
-    PORTC = ma7doan[so];
+    PORTC = maden[so];
 
     // Global interrupt enable
     #asm("sei")
 
 while (1)
 {
-    if (PINA.0 == 0 && nut1 == 0)
-    {
+    // Place your code here
+    if (PINA.0 == 0)
         chay = 1;
-        dem = 0;
-        nut1 = 1;
-    }
-
-    if (PINA.0 == 1) nut1 = 0;
-
-    if (PINA.1 == 0 && nut2 == 0)
-    {
+    if (PINA.1 == 0)
         chay = 0;
-        dem = 0;
-        nut2 = 1;
-    }
 
-    if (PINA.1 == 1) nut2 = 0;
+    delay_ms(10);
 
-    delay_ms(1);
-
-    if (chay)
+    if (chay == 1)
     {
-        dem += 1;
-        if (dem >= 300)
+        dem++;
+        if (dem >= 30)
         {
             dem = 0;
-            if (so == 0) so = 9;
+            if (so == 0)
+                so = 9;
             else so--;
         }
     }
-    else dem = 0;
-
-    PORTC = ma7doan[so];
+    else
+    {
+        dem = 0;
+    }
+    PORTC = maden[so];
 }
 }

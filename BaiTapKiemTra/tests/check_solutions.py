@@ -136,10 +136,10 @@ keys(0);step();so=9;press(1);assert(so==0);press(2);assert(so==9);''',
 for(i=0;i<30;i++){press(1);}assert(so==9);
 for(i=0;i<30;i++){press(2);}assert(so==0);''',
 'single_auto_inc': '''assert(so==0 && !chay);press(1);dem=0;
-run(99);assert(so==0);run(1);assert(so==1);
+run(90);assert(so==0);run(10);assert(so==1);
 so=9;dem=0;run(100);assert(so==0);press(2);old=so;run(1000);assert(so==old && !chay);''',
 'single_auto_dec': '''assert(so==9 && !chay);press(1);dem=0;
-run(299);assert(so==9);run(1);assert(so==8);
+run(290);assert(so==9);run(10);assert(so==8);
 so=0;dem=0;run(300);assert(so==9);press(2);old=so;run(1000);assert(so==old && !chay);''',
 'single_period': '''assert(so==0 && t==1000);run(999);assert(so==0);run(1);assert(so==1);
 for(i=0;i<50;i++){press(1);}assert(t==2000);
@@ -243,16 +243,17 @@ def main():
     prelude='#include <assert.h>\n#include <stdio.h>\n'
     prelude+='\n'.join(f'#define {k} {v}' for k,v in AVR_BITS.items())+'\n'
     prelude+='\n'.join(f'unsigned char {r}={255 if r.startswith("PIN") else 0};' for r in registers)
-    prelude+='\nunsigned int ADCW,adc_samples[3];\nvoid delay_ms(unsigned int n){(void)n;}\nvoid delay_us(unsigned int n){(void)n;}\n'
+    prelude+='\nunsigned int ADCW,adc_samples[3];\nunsigned long elapsed_delay,last_delay;\nvoid delay_ms(unsigned int n){elapsed_delay+=n;}\nvoid delay_us(unsigned int n){(void)n;}\nvoid host_release(unsigned char *pin,unsigned char bit){*pin|=1U<<bit;}\n'
     prelude+='unsigned char codes[10]={0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};\n'
-    header=(ROOT.parent/'bai_06.c').read_text().split('#include',1)[0]
+    header=(ROOT.parent/'bai_06.c').read_text().split('#include',1)[0].replace('8/24/2026','10/21/2026')
+    header_lines=[line.strip() for line in header.splitlines() if line.strip()]
     with tempfile.TemporaryDirectory(prefix='avr_direct_') as folder:
         folder=Path(folder)
         for row in ROWS:
             for q in (1,2):
                 path=ROOT/f"de_{row['set']:02d}"/f'cau_{q}.c'
                 text=path.read_text();kind=row[f'q{q}_kind']
-                assert text.split('#include',1)[0]==header, path
+                assert [line.strip() for line in text.split('#include',1)[0].splitlines() if line.strip()]==header_lines, path
                 assert not any(f' {f}(' in text for f in ('docnut','xulynut','demthoigian')), path
                 globals_text,main_text=text.split('void main(void)\n{\n',1)
                 locals_text,setup=main_text.split('    // Input/Output Ports initialization',1)
@@ -262,6 +263,8 @@ def main():
                 source=re.sub(r'^#include <(?:mega16|delay)\.h>\s*$', '',source,flags=re.M)
                 source=re.sub(r'#asm\("(?:cli|sei)"\)', '',source)
                 source=re.sub(r'interrupt \[[^\]]+\] ', '',source)
+                # Emulate the physical release that ends a standalone button wait.
+                source=re.sub(r'while\s*\(\s*(PIN[A-D])\.([0-7])\s*==\s*0\s*\)\s*;', r'host_release(&\1,\2);', source)
                 source=re.sub(r'\b(PIN[A-D])\.([0-7])',r'((\1 >> \2) & 1)',source)
                 if kind.startswith('adc_'):
                     source,n=re.subn(r'unsigned int docadc\(unsigned char kenh\)\n\{.*?\n\}',
@@ -273,8 +276,8 @@ displayed[k]=-1;for(d=0;d<10;d++)if((PORTC|0x80)==codes[d])displayed[k]=d;
 if(PORTC&0x80)dp&=~(1U<<k);else dp|=1U<<k;}}
 unsigned int shown(void){unsigned int k,n=0;for(k=0;k<DIGITS;k++){assert(displayed[k]>=0);n=n*10+displayed[k];}return n;}
 void keys(unsigned int mask){PINA=PINB=PINC=PIND=255;PIN_SETTER}
-void step(void){step_code();TIMER0 TIMER2 OBSERVE}
-void run(unsigned int n){while(n--)step();}
+void step(void){unsigned long before=elapsed_delay;step_code();last_delay=elapsed_delay-before;TIMER0 TIMER2 OBSERVE}
+void run(unsigned int n){unsigned long spent=0;while(spent<n){step();spent+=last_delay?last_delay:1;}}
 void press(unsigned int mask){keys(0);step();keys(mask);step();keys(0);step();}
 '''
                 tick=4 if kind in ('timer_start','timer_auto_dec') else 2

@@ -7,10 +7,11 @@ http://www.hpinfotech.com
 
 Project :
 Version :
-Date    : 8/24/2026
+Date    : 10/21/2026
 Author  :
 Company :
 Comments:
+
 
 Chip type               : ATmega16
 Program type            : Application
@@ -20,14 +21,14 @@ External RAM size       : 0
 Data Stack size         : 256
 *******************************************************/
 
+
 #include <mega16.h>
 #include <delay.h>
 
 // Declare your global variables here
-unsigned char ma7doan[10] =
+unsigned char maden[10]=
 {
-    0xC0, 0xF9, 0xA4, 0xB0, 0x99,
-    0x92, 0x82, 0xF8, 0x80, 0x90
+    0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8, 0x80, 0x90
 };
 unsigned char vitri = 0;
 volatile unsigned int so = 10;
@@ -40,12 +41,14 @@ void hienthi(unsigned int so, unsigned char cham)
     unsigned int chia = 1000;
     for (i = 0; i < vitri; i++) chia /= 10;
     PORTA &= 0x0F;
-    ma = ma7doan[(so / chia) % 10];
-    if (vitri == cham) ma &= 0x7F;
+    ma = maden[(so / chia) % 10];
+    if (vitri == cham)
+        ma &= 0x7F;
     PORTC = ma;
     PORTA |= (1 << (vitri + 4));
     vitri++;
-    if (vitri == 4) vitri = 0;
+    if (vitri == 4)
+        vitri = 0;
 }
 
 interrupt [EXT_INT0] void ext_int0_isr(void)
@@ -63,6 +66,8 @@ void main(void)
     unsigned char trangthai_ngat;
 
     #asm("cli")
+
+    // Declare your local variables here
 
     // Input/Output Ports initialization
     // Port A initialization
@@ -172,13 +177,15 @@ void main(void)
 
 while (1)
 {
+    // Place your code here
     trangthai_ngat = SREG;
 
     #asm("cli")
 
     if (PINA.0 == 0 && (nut1 == 0 || giu1 >= 200))
     {
-        if (so < 9999) so++;
+        if (so < 9999)
+            so++;
         nut1 = 1;
         giu1 = 0;
     }
@@ -188,11 +195,12 @@ while (1)
         nut1 = 0;
         giu1 = 0;
     }
-    if (nut1) giu1++;
-
+    if (nut1)
+        giu1++;
     if (PINA.1 == 0 && (nut2 == 0 || giu2 >= 200))
     {
-        if (so > 1) so--;
+        if (so > 1)
+            so--;
         nut2 = 1;
         giu2 = 0;
     }
@@ -202,15 +210,16 @@ while (1)
         nut2 = 0;
         giu2 = 0;
     }
-    if (nut2) giu2++;
-
-    if (chay)
+    if (nut2)
+        giu2++;
+    if (chay == 1)
     {
-        dem += 1;
+        dem++;
         if (dem >= 1000)
         {
             dem = 0;
-            if (so > 1) so--;
+            if (so > 1)
+                so--;
             else { so = 10; chay = 0; }
         }
     }

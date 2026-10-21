@@ -7,10 +7,11 @@ http://www.hpinfotech.com
 
 Project :
 Version :
-Date    : 8/24/2026
+Date    : 10/21/2026
 Author  :
 Company :
 Comments:
+
 
 Chip type               : ATmega16
 Program type            : Application
@@ -19,6 +20,7 @@ Memory model            : Small
 External RAM size       : 0
 Data Stack size         : 256
 *******************************************************/
+
 
 #include <mega16.h>
 #include <delay.h>
@@ -31,6 +33,8 @@ void main(void)
     unsigned char i, nut[8] = {0};
 
     #asm("cli")
+
+    // Declare your local variables here
 
     // Input/Output Ports initialization
     // Port A initialization
@@ -143,6 +147,7 @@ void main(void)
 
 while (1)
 {
+    // Place your code here
     delay_ms(1);
 
     for (i = 0; i < 8; i++)
