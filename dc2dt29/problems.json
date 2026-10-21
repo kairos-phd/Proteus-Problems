@@ -1,0 +1,310 @@
+[
+  {
+    "set": 1,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PC0 và PC1.\nLập trình chương trình hoạt động như sau:\n- LED sẽ chạy từ trái sang phải, sau khi hết hàng LED sẽ vòng lại LED đầu tiên.\n- Ấn nút thứ nhất thì sẽ tăng tốc độ chạy LED, nhưng không nhanh quá 100Hz.\n- Ấn nút thứ hai thì sẽ giảm tốc độ chạy LED, nhưng không chậm dưới 4Hz.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm.\nThiết lập Timer 0 hoạt động ở chế độ Normal với tần số 125kHz, kích hoạt ngắt tràn.\nThiết lập ngắt ngoài 0 và 1 hoạt động ở chế độ Falling Edge.\nLập trình chương trình hoạt động như sau:\n- Tính toán để tạo khoảng thời gian chính xác 0.5(s) bằng timer, ghi chú vào chương trình phục vụ ngắt.\n- Ban đầu số hiển thị là 8000\n- Ngắt ngoài 0 được kích hoạt thì số hiển thị sẽ tăng 1 đơn vị, nhưng không tăng quá 8888.\n- Ngắt ngoài 1 được kích hoạt thì số hiển thị sẽ giảm 1 đơn vị, nhưng không giảm dưới 8000.\n- Ấn nút thứ 1 thì số hiển thị sẽ tự động tăng sau mỗi 0.5(s), nếu tăng quá 9000 thì vòng lại 1000, ấn nút thứ 2 thì số hiển thị sẽ dừng lại.",
+    "q1_kind": "chase_fast",
+    "q2_kind": "timer_ext_limits"
+  },
+  {
+    "set": 2,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 10 nút bấm.\nLập trình chương trình hoạt động như sau:\n- Khi ấn một nút bất kỳ thì LED 7 thanh sẽ hiển thị số tương ứng với nút đó.\n- Nhả nút ra thì số hiển thị giữ nguyên.\n- Khi ấn đồng thời nhiều nút thì LED 7 thanh sẽ hiển thị số lớn hơn.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 3 nút bấm nối vào PB0, PB1, PB2.\nThiết lập Timer 0 hoạt động ở chế độ Normal với tần số 125kHz, kích hoạt ngắt tràn.\nThiết lập Timer 2 hoạt động ở chế độ Normal, kích hoạt ngắt tràn.\nLập trình chương trình hoạt động như sau:\n- Tính toán để tạo khoảng thời gian chính xác 0.5(s) bằng timer 0, ghi chú vào chương trình phục vụ ngắt.\n- Sử dụng ngắt tràn Timer 2 để quét LED 7 thanh.\n- Ban đầu số hiển thị là 1234.\n- Ấn nút thứ 1 thì số hiển thị tăng lên 1 đơn vị, nhưng không tăng quá 9999.\n- Ấn nút thứ 2 thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 0.\n- Ấn nút thứ 3 thì số hiển thị sẽ tự động tăng sau mỗi 0.5(s), tăng đến 9999 thì dừng.",
+    "q1_kind": "keypad10",
+    "q2_kind": "timer_auto_inc"
+  },
+  {
+    "set": 3,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm.\nLập trình chương trình hoạt động như sau:\n- Trạng thái ban đầu LED hiển thị số 5\n- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, nếu tăng quá 9 thì vòng lại 0.\n- Ấn nút thứ hai thì số hiển thị giảm 1 đơn vị, nếu giảm dưới 0 thì vòng lên 9.\n- Yêu cầu chờ nhả nút ra để thực hiện lệnh tăng/giảm lượt tiếp theo.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 3 nút bấm nối vào PB0, PB1, PB2.\nThiết lập Timer 0 hoạt động ở chế độ Normal với tần số 31250Hz, kích hoạt ngắt tràn\nThiết lập ngắt ngoài 0 hoạt động ở chế độ Falling Edge.\nLập trình chương trình hoạt động như sau:\n- Tính toán để tạo khoảng thời gian chính xác 0.5(s) bằng timer, ghi chú vào chương trình phục vụ ngắt.\n- Ban đầu số hiển thị là 1111.\n- Ấn nút thứ nhất thì số hiển thị sẽ tăng 1 đơn vị, nhưng không tăng quá 9000.\n- Ấn nút thứ hai thì số hiển thị sẽ giảm 1 đơn vị, nhưng không giảm dưới 1000.\n- Ấn nút thứ 3 thì số hiển thị sẽ tự động tăng sau mỗi 0.5(s), nếu tăng quá 9000 thì vòng lại 1000.\n- Ngắt ngoài 0 được kích hoạt thì số hiển thị dừng lại.",
+    "q1_kind": "single_wrap",
+    "q2_kind": "timer_start"
+  },
+  {
+    "set": 4,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PC0 và PC1.\nLập trình chương trình hoạt động như sau:\n- LED sẽ chạy từ phải sang trái, sau khi hết hàng LED sẽ vòng lại LED đầu tiên\n- Ấn nút thứ nhất thì sẽ tăng tốc độ chạy LED, nhưng không nhanh quá 25Hz.\n- Ấn nút thứ hai thì sẽ giảm tốc độ chạy LED, nhưng không chậm dưới 5Hz.\n- Ấn và giữ nút thì tốc độ thay đổi liên tục.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PD6 và PD7. Thiết lập ngắt ngoài 0 hoạt động ở chế độ Falling Edge\nLập trình chương trình hoạt động như sau:\n- Ban đầu số hiển thị là 1000.\n- Ấn nút thứ nhất thì số hiển thị tăng lên 1 đơn vị, nhưng không tăng quá 9999.\n- Ấn nút thứ hai thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 0.\n- Yêu cầu chờ nhả nút ra để thực hiện lệnh tăng/giảm lượt tiếp theo.\n- Ngắt ngoài 0 được kích hoạt thì reset số hiển thị về 1000.",
+    "q1_kind": "chase_slow",
+    "q2_kind": "reset1000"
+  },
+  {
+    "set": 5,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm.\nLập trình chương trình hoạt động như sau:\n\t- Trạng thái ban đầu LED hiển thị số 6\n\t- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, tăng tối đa đến 9 thì dừng lại.\n\t- Ấn nút thứ hai thì số hiển thị giảm 1 đơn vị, giảm tối thiểu đến 0 thì dừng lại.\n\t- Yêu cầu chờ nhả nút ra để thực hiện lệnh tăng/giảm lượt tiếp theo.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PB0, PB1. Thiết lập ngắt ngoài 1 hoạt động ở chế độ Rising Edge.\nLập trình chương trình hoạt động như sau:\n- Ban đầu số hiển thị là 6000.\n- Ấn nút thứ nhất thì số hiển thị sẽ tự động giảm với chu kì 1(s), sau khi giảm đến 0 sẽ dừng lại.\n- Ấn nút thứ hai thì số hiển thị sẽ dừng lại.\n- Ngắt ngoài 1 được kích hoạt thì reset số hiển thị về 6000.",
+    "q1_kind": "single_clamp",
+    "q2_kind": "count6000"
+  },
+  {
+    "set": 6,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1.\nLập trình chương trình hoạt động như sau:\n\t- Trạng thái ban đầu LED hiển thị số 0.\n\t- Ấn nút thứ nhất thì số hiển thị sẽ tự động tăng với chu kì 100 (ms).\n\t- Ấn nút thứ hai thì số hiển thị sẽ dừng lại.\n\t- Nếu số tăng quá 9 thì sẽ vòng lại 0.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0, PA1. Thiết lập ngắt ngoài 1 hoạt động ở chế độ Falling Edge.\nLập trình chương trình hoạt động như sau:\n- Ban đầu số hiển thị là 0.\n- Ngắt ngoài được kích hoạt thì số hiển thị sẽ tự động tăng sau một khoảng thời gian t, tăng quá 9000 thì vòng về 0.\n- Ấn nút thứ nhất thì sẽ tăng thời gian tăng số này, nhưng không tăng quá 2 (s).\n- Ấn nút thứ hai thì sẽ giảm thời gian tăng số này, nhưng không giảm dưới 100 (ms).",
+    "q1_kind": "single_auto_inc",
+    "q2_kind": "auto_period_inc"
+  },
+  {
+    "set": 7,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1.\nLập trình chương trình hoạt động như sau:\n\t- Số hiển thị sẽ tự động tăng từ 0 đến 9 sau một khoảng thời gian t.\n\t- Nếu số tăng quá 9 thì sẽ vòng lại 0.\n\t- Ấn nút thứ nhất thì sẽ làm tăng thời gian tăng số, nhưng không tăng quá 2 (s).\n\t- Ấn nút thứ hai thì sẽ làm giảm thời gian tăng số, nhưng không giảm dưới 200 (ms).",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PB0, PB1. Thiết lập 2 ngắt ngoài 0 và 1 hoạt động ở chế độ Falling Edge\nLập trình chương trình hoạt động như sau:\n- Ban đầu số hiển thị là 0.\n- Ngắt ngoài 0 được kích hoạt thì số hiển thị sẽ tự động giảm sau một khoảng thời gian t, giảm dưới 0 thì vòng lên 9999.\n- Ngắt ngoài 1 được kích hoạt thì số hiển thị sẽ dừng lại.\n- Ấn nút thứ nhất thì sẽ tăng thời gian tăng số này, nhưng không tăng quá 2(s).\n- Ấn nút thứ hai thì sẽ giảm thời gian tăng số này, nhưng không giảm dưới 100 (ms).",
+    "q1_kind": "single_period",
+    "q2_kind": "auto_period_dec"
+  },
+  {
+    "set": 8,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1.\nLập trình chương trình hoạt động như sau:\n\t- Trạng thái ban đầu LED hiển thị số 9.\n- Ấn nút thứ nhất thì số hiển thị sẽ tự động giảm với chu kì 300 (ms).\n\t- Ấn nút thứ hai thì số hiển thị sẽ dừng lại.\n\t- Nếu số giảm dưới 0 thì sẽ vòng lại 9.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 1 nút bấm nối vào PA0. Lập trình chương trình hoạt động như sau:\n- Thiết lập 2 ngắt ngoài 0 và 1 hoạt động ở chế độ Falling Edge.\n- Ban đầu số hiển thị là 5555.\n- Ấn nút lần thứ nhất thì số hiển thị sẽ tự động tăng sau mỗi khoảng thời gian t, ấn nút lần thứ 2 thì số hiển thị sẽ dừng lại.\n- Nếu ngắt ngoài 0 được kích hoạt thì sẽ tăng khoảng thời gian t, nhưng không tăng quá 3 (s).\n- Nếu ngắt ngoài 1 được kích hoạt thì sẽ giảm khoảng thời gian t, nhưng không giảm dưới 500 (ms).",
+    "q1_kind": "single_auto_dec",
+    "q2_kind": "toggle_period"
+  },
+  {
+    "set": 9,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 8 nút bấm nối vào PORTA.\nLập trình chương trình hoạt động như sau:\n- Khi ấn một nút bất kỳ thì LED tương ứng sẽ đảo trạng thái (LED đang sáng sẽ tắt và ngược lại).\n- Nếu ấn và giữ nút thì LED đảo trạng thái liên tục với chu kì 300 (ms).",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo điện áp từ 0-5V và đo nhiệt độ bằng cảm biến nhiệt LM35, hiển thị giá trị lên 3 LED 7 thanh, sử dụng 2 nút bấm để điều khiển, sử dụng 4 LED đơn để hiển thị chế độ.\nLập trình chương trình hoạt động như sau:\n- Đo điện áp bằng chân ADC0, đo nhiệt độ bằng chân ADC1.\n- Ban đầu LED hiển thị giá trị điện áp với độ chính xác 0.1V.\n- Khi ấn nút thứ nhất thì sẽ chuyển đổi giữa đo điện áp và đo nhiệt độ, sử dụng LED 1 và LED 2 để cho biết đang ở chế độ đo nào.\n- Khi ấn nút thứ hai thì sẽ chuyển đổi độ chính xác khi đo điện áp giữa 0.1V và 0.01V, sử dụng LED 3 và LED 4 để cho biết đang ở độ chính xác nào.",
+    "q1_kind": "toggle8_repeat",
+    "q2_kind": "adc_lm35"
+  },
+  {
+    "set": 10,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm.\nLập trình chương trình hoạt động như sau:\n\t- Trạng thái ban đầu LED hiển thị số 5.\n\t- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, nếu tăng quá 9 thì vòng lại 0.\n\t- Ấn nút thứ hai thì số hiển thị giảm 1 đơn vị, nếu giảm dưới 0 thì vòng lên 9.\n\t- Nếu ấn và giữ nút thì số thay đổi liên tục sau mỗi 300 (ms).",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo điện áp từ 0 - 5V nhận lệnh điều khiển từ 1 nút bấm nối vào PD0, hiển thị giá trị lên LED 7 thanh 4 số, sử dụng thêm một con LED 7 thanh hiển thị số.\nLập trình chương trình hoạt động như sau:\n- Ban đầu đo điện áp, hiển thị điện áp với độ chính xác 0.1V.\n- Ấn nút lần thứ nhất thì chuyển đổi sang độ chính xác 0.01V, ấn lần tiếp theo thì chuyển sang độ chính xác 0.1V,...\n- Giá trị trên con LED 7 thanh đơn hiển thị 1 nếu đang đo độ chính xác là 0.1V, hiển thị 2 nếu đang đo độ chính xác là 0.01V.",
+    "q1_kind": "single_repeat",
+    "q2_kind": "adc_precision"
+  },
+  {
+    "set": 11,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 8 nút bấm nối vào PORTA.\nLập trình chương trình hoạt động như sau:\n- Khi ấn một nút bất kỳ thì LED tương ứng sẽ đảo trạng thái (LED đang sáng sẽ tắt và ngược lại).\n- Chờ nhả nút ra mới thực hiện đảo trạng thái lần tiếp theo.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PD6 và PD7. Thiết lập ngắt ngoài 0 hoạt động ở chế độ Falling Edge\nLập trình chương trình hoạt động như sau:\n- Ban đầu số hiển thị là 1000.\n- Ấn nút thứ nhất thì số hiển thị tăng lên 1 đơn vị, nhưng không tăng quá 9999.\n- Ấn nút thứ hai thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 0.\n\t- Yêu cầu chờ nhả nút ra để thực hiện lệnh tăng/giảm lượt tiếp theo.\n\t- Ngắt ngoài 0 được kích hoạt thì reset số hiển thị về 1000.",
+    "q1_kind": "toggle8",
+    "q2_kind": "reset1000"
+  },
+  {
+    "set": 12,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PA1 và PA2.\nLập trình chương trình hoạt động như sau:\n- Trạng thái ban đầu chỉ có LED thứ 2 sáng.\n- Ấn nút thứ nhất thì LED sáng sẽ di chuyển sang phải.\n- Ấn nút thứ hai thì LED sáng sẽ di chuyển sang trái.\n- Nếu LED di chuyển đến cuối cùng thì sẽ vòng lại.\n- Nếu ấn và giữ nút thì LED sẽ di chuyển với chu kì là 200 (ms).",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PB0, PB1. Thiết lập ngắt ngoài 1 hoạt động ở chế độ Rising Edge.\nLập trình chương trình hoạt động như sau:\n- Ban đầu số hiển thị là 6000.\n- Ấn nút thứ nhất thì số hiển thị sẽ tự động giảm với chu kì 1(s), sau khi giảm đến 0 sẽ dừng lại.\n- Ấn nút thứ hai thì số hiển thị sẽ dừng lại.\n- Ngắt ngoài 1 được kích hoạt thì reset số hiển thị về 6000.",
+    "q1_kind": "shift_buttons",
+    "q2_kind": "count6000"
+  },
+  {
+    "set": 13,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PB6 và PB7.\nLập trình chương trình hoạt động như sau:\n- Trạng thái ban đầu 8 LED nhấp nháy xen kẽ với chu kì 100 (ms).\n- Ấn nút thứ nhất thì tăng tần số nhấp nháy.\n- Ấn nút thứ hai thì giảm tần số nhấp nháy.\n- Nếu ấn và giữ nút thì tần số sẽ tiếp tục thay đổi mà không phải chờ nhả nút ra.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0, PA1. Thiết lập ngắt ngoài 1 hoạt động ở chế độ Falling Edge.\nLập trình chương trình hoạt động như sau:\n- Ban đầu số hiển thị là 0.\n- Ngắt ngoài được kích hoạt thì số hiển thị sẽ tự động tăng sau một khoảng thời gian t, tăng quá 9000 thì vòng về 0.\n- Ấn nút thứ nhất thì sẽ tăng thời gian tăng số này, nhưng không tăng quá 2(s).\n- Ấn nút thứ hai thì sẽ giảm thời gian tăng số này, nhưng không giảm dưới 100(ms).",
+    "q1_kind": "blink",
+    "q2_kind": "auto_period_inc"
+  },
+  {
+    "set": 14,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 9 nút bấm.\nLập trình chương trình hoạt động như sau:\n\t- Khi ấn 1 nút thì LED sẽ hiển thị số tương ứng từ 1-9.\n\t- Khi không ấn nút nào thì LED hiển thị số 0.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PB0, PB1. Thiết lập 2 ngắt ngoài 0 và 1 hoạt động ở chế độ Falling Edge.\nLập trình chương trình hoạt động như sau:\n- Ban đầu số hiển thị là 0\n- Ngắt ngoài 0 được kích hoạt thì số hiển thị sẽ tự động giảm sau một khoảng thời gian t, giảm dưới 0 thì vòng lên 9999.\n- Ngắt ngoài 1 được kích hoạt thì số hiển thị sẽ dừng lại.\n- Ấn nút thứ nhất thì sẽ tăng thời gian tăng số này, nhưng không tăng quá 2(s).\n- Ấn nút thứ hai thì sẽ giảm thời gian tăng số này, nhưng không giảm dưới 100(ms).",
+    "q1_kind": "keypad9",
+    "q2_kind": "auto_period_dec"
+  },
+  {
+    "set": 15,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PC0 và PC1.\nLập trình chương trình hoạt động như sau:\n\t- LED sẽ chạy từ trái sang phải, sau khi hết hàng LED sẽ vòng lại LED đầu tiên.\n\t- Ấn nút thứ nhất thì sẽ tăng tốc độ chạy LED, nhưng không nhanh quá 100Hz.\n\t- Ấn nút thứ hai thì sẽ giảm tốc độ chạy LED, nhưng không chậm dưới 4Hz.\n\t- Ấn và giữ nút thì tốc độ thay đổi liên tục.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 1 nút bấm nối vào PA0. Lập trình chương trình hoạt động như sau:\n- Thiết lập 2 ngắt ngoài 0 và 1 hoạt động ở chế độ Falling Edge.\n- Ban đầu số hiển thị là 5555.\n- Ấn nút lần thứ nhất thì số hiển thị sẽ tự động tăng sau mỗi khoảng thời gian t, ấn nút lần thứ 2 thì số hiển thị sẽ dừng lại.\n- Nếu ngắt ngoài 0 được kích hoạt thì sẽ tăng khoảng thời gian t, nhưng không tăng quá 3 (s).\n- Nếu ngắt ngoài 1 được kích hoạt thì sẽ giảm khoảng thời gian t, nhưng không giảm dưới 500 (ms).",
+    "q1_kind": "chase_fast",
+    "q2_kind": "toggle_period"
+  },
+  {
+    "set": 16,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 10 nút bấm.\nLập trình chương trình hoạt động như sau:\n\t- Khi ấn một nút bất kỳ thì LED 7 thanh sẽ hiển thị số tương ứng với nút đó.\n\t- Nhả nút ra thì số hiển thị giữ nguyên.\n\t- Khi ấn đồng thời nhiều nút thì LED 7 thanh sẽ hiển thị số lớn hơn.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo điện áp từ 0-5V và đo nhiệt độ bằng cảm biến nhiệt LM35, hiển thị giá trị lên 3 LED 7 thanh, sử dụng 2 nút bấm để điều khiển, sử dụng 4 LED đơn để hiển thị chế độ.\nLập trình chương trình hoạt động như sau:\n- Đo điện áp bằng chân ADC0, đo nhiệt độ bằng chân ADC1.\n- Ban đầu LED hiển thị giá trị điện áp với độ chính xác 0.1 V.\n- Khi ấn nút thứ nhất thì sẽ chuyển đổi giữa đo điện áp và đo nhiệt độ, sử dụng LED 1 và LED 2 để cho biết đang ở chế độ đo nào.\n- Khi ấn nút thứ hai thì sẽ chuyển đổi độ chính xác khi đo điện áp giữa 0.1V và 0.01V, sử dụng LED 3 và LED 4 để cho biết đang ở độ chính xác nào.",
+    "q1_kind": "keypad10",
+    "q2_kind": "adc_lm35"
+  },
+  {
+    "set": 17,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm.\nLập trình chương trình hoạt động như sau:\n\t- Trạng thái ban đầu LED hiển thị số 5\n\t- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, nếu tăng quá 9 thì vòng lại 0.\n\t- Ấn nút thứ hai thì số hiển thị giảm 1 đơn vị, nếu giảm dưới 0 thì vòng lên 9.\n\t- Yêu cầu chờ nhả nút ra để thực hiện lệnh tăng/giảm lượt tiếp theo.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo điện áp từ 0-5V nhận lệnh điều khiển từ 1 nút bấm nối vào PD0, hiển thị giá trị lên LED 7 thanh 4 số, sử dụng thêm một con LED 7 thanh hiển thị số.\nLập trình chương trình hoạt động như sau:\n- Ban đầu đo điện áp, hiển thị điện áp với độ chính xác 0.1V.\n- Ấn nút lần thứ nhất thì chuyển đổi sang độ chính xác 0.01V, ấn lần tiếp theo thì chuyển sang độ chính xác 0.1V,...\n- Giá trị trên con LED 7 thanh đơn hiển thị 1 nếu đang đo độ chính xác là 0.1V, hiển thị 2 nếu đang đo độ chính xác là 0.01V.",
+    "q1_kind": "single_wrap",
+    "q2_kind": "adc_precision"
+  },
+  {
+    "set": 18,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PC0 và PC1.\nLập trình chương trình hoạt động như sau:\n\t- LED sẽ chạy từ phải sang trái, sau khi hết hàng LED sẽ vòng lại LED đầu tiên\n\t- Ấn nút thứ nhất thì sẽ tăng tốc độ chạy LED, nhưng không nhanh quá 25Hz.\n\t- Ấn nút thứ hai thì sẽ giảm tốc độ chạy LED, nhưng không chậm dưới 5Hz.\n\t- Ấn và giữ nút thì tốc độ thay đổi liên tục.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo 3 tín hiệu điện áp từ 0-5V đưa vào 3 chân ADC0, ADC1, ADC2 nhận lệnh điều khiển từ 1 nút bấm nối vào PD0, hiển thị giá trị lên LED 7 thanh 4 số, sử dụng thêm một con LED 7 thanh hiển thị số. Lập trình chương trình hoạt động như sau:\n- Ban đầu đo điện áp tại đầu vào chân ADC0, hiển thị với độ chính xác 0.1V\n- Ấn nút thì chuyển sang đo điện áp tại chân ADC tiếp theo (0 –> 1 –> 2 –> 0)\n- Giá trị trên con LED 7 thanh đơn hiển thị 0 nếu đang đo điện áp tại chân ADC0, hiển thị 1 nếu đang đo điện áp tại chân ADC1,hiển thị 2 nếu đang đo điện áp tại chân ADC2.\n- Yêu cầu chờ nhả nút ra mới chuyển đổi lần tiếp theo.",
+    "q1_kind": "chase_slow",
+    "q2_kind": "adc_channel_button"
+  },
+  {
+    "set": 19,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm.\nLập trình chương trình hoạt động như sau:\n\t- Trạng thái ban đầu LED hiển thị số 6\n\t- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, tăng tối đa đến 9 thì dừng lại.\n\t- Ấn nút thứ hai thì số hiển thị giảm 1 đơn vị, giảm tối thiểu đến 0 thì dừng lại.\n\t- Yêu cầu chờ nhả nút ra để thực hiện lệnh tăng/giảm lượt tiếp theo.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1. Lập trình chương trình hoạt động như sau:\n- Thiết lập ngắt ngoài 0 hoạt động ở chế độ Falling Edge.\n- Ban đầu số hiển thị là 10.\n- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, nhưng không tăng quá 9999.\n- Ấn nút thứ 2 thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 1.\n- Ấn và giữ nút thì số thay đổi liên tục.\n- Nếu ngắt ngoài 0 được kích hoạt thì số hiển thị tự động giảm dần sau mỗi 1(s).\n- Nếu số hiển thị giảm đến 0 thì reset về 10 và dừng lại.",
+    "q1_kind": "single_clamp",
+    "q2_kind": "countdown10"
+  },
+  {
+    "set": 20,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1.\nLập trình chương trình hoạt động như sau:\n\t- Trạng thái ban đầu LED hiển thị số 0.\n\t- Ấn nút thứ nhất thì số hiển thị sẽ tự động tăng với chu kì 100 (ms).\n\t- Ấn nút thứ hai thì số hiển thị sẽ dừng lại.\n\t- Nếu số tăng quá 9 thì sẽ vòng lại 0.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo 3 tín hiệu điện áp từ 0 - 5V đưa vào 3 chân ADC0, ADC1, ADC2, hiển thị giá trị lên LED 7 thanh 4 số, sử dụng thêm một con LED 7 thanh hiển thị số.\nLập trình chương trình hoạt động như sau:\n- Thiết lập ngắt ngoài 1 hoạt động ở chế độ Rising Edge.\n- Ban đầu đo điện áp tại đầu vào chân ADC0, hiển thị với độ chính xác 0.1V.\n- Ngắt ngoài được kích hoạt thì chuyển sang đo điện áp tại chân ADC tiếp theo (0 –> 1 –> 2 –> 0).\n- Giá trị trên con LED 7 thanh đơn hiển thị 0 nếu đang đo điện áp tại chân ADC0, hiển thị 1 nếu đang đo điện áp tại chân ADC1,hiển thị 2 nếu đang đo điện áp tại chân ADC2.",
+    "q1_kind": "single_auto_inc",
+    "q2_kind": "adc_channel_irq"
+  },
+  {
+    "set": 21,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1.\nLập trình chương trình hoạt động như sau:\n- Số hiển thị sẽ tự động tăng từ 0 đến 9 sau một khoảng thời gian t.\n- Nếu số tăng quá 9 thì sẽ vòng lại 0.\n- Ấn nút thứ nhất thì sẽ làm tăng thời gian tăng số, nhưng không tăng quá 2(s).\n- Ấn nút thứ hai thì sẽ làm giảm thời gian tăng số, nhưng không giảm dưới 200 (ms)",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 3 nút bấm nối vào PB0, PB1, PB2.Thiết lập Timer 0 hoạt động ở chế độ Normal với tần số 31250Hz, kích hoạt ngắt tràn. Thiết lập Timer 2 hoạt động ở chế độ Normal, kích hoạt ngắt tràn.\nLập trình chương trình hoạt động như sau:\n- Tính toán để tạo khoảng thời gian chính xác 0.5(s) bằng timer 0, ghi chú vào chương trình phục vụ ngắt.Sử dụng ngắt tràn Timer 2 để quét LED 7 thanh\n- Ban đầu số hiển thị là 1234.\n- Ấn nút thứ 1 thì số hiển thị tăng lên 1 đơn vị, nhưng không tăng quá 9999.\n- Ấn nút thứ 2 thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 0.\n- Ấn nút thứ 3 thì số hiển thị sẽ tự động giảm sau mỗi 0.5(s), giảm đến 0 thì dừng.",
+    "q1_kind": "single_period",
+    "q2_kind": "timer_auto_dec"
+  },
+  {
+    "set": 22,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1.\nLập trình chương trình hoạt động như sau:\n\t- Trạng thái ban đầu LED hiển thị số 9.\n- Ấn nút thứ nhất thì số hiển thị sẽ tự động giảm với chu kì 300 (ms).\n\t- Ấn nút thứ hai thì số hiển thị sẽ dừng lại.\n\t- Nếu số giảm dưới 0 thì sẽ vòng lại 9.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm.\nThiết lập Timer 0 hoạt động ở chế độ Normal với tần số 125kHz, kích hoạt ngắt tràn. Thiết lập ngắt ngoài 0 và 1 hoạt động ở chế độ Falling Edge.\nLập trình chương trình hoạt động như sau:\n- Tính toán để tạo khoảng thời gian chính xác 0.5(s) bằng timer.\n- Ban đầu số hiển thị là 8000\n- Ngắt ngoài 0 được kích hoạt thì số hiển thị sẽ tăng 1, không  quá 8888.\n- Ngắt ngoài 1 được kích hoạt thì số hiển thị sẽ giảm 1 đơn vị, nhưng không giảm dưới 8000.\n- Ấn nút thứ 1 thì số hiển thị sẽ tự động tăng sau mỗi 0.5(s), nếu tăng quá 9000 thì vòng lại 1000.\n- Ấn nút thứ 2 thì số hiển thị sẽ dừng lại.",
+    "q1_kind": "single_auto_dec",
+    "q2_kind": "timer_ext_limits"
+  },
+  {
+    "set": 23,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 8 nút bấm nối vào PORTA.\nLập trình chương trình hoạt động như sau:\n- Khi ấn một nút bất kỳ thì LED tương ứng sẽ đảo trạng thái (LED đang sáng sẽ tắt và ngược lại).\n- Nếu ấn và giữ nút thì LED đảo trạng thái liên tục với chu kì 300 (ms).",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 3 nút bấm nối vào PB0, PB1, PB2.\nThiết lập Timer 0 hoạt động ở chế độ Normal với tần số 125kHz, kích hoạt ngắt tràn.\nThiết lập Timer 2 hoạt động ở chế độ Normal, kích hoạt ngắt tràn.\nLập trình chương trình hoạt động như sau:\n- Tính toán để tạo khoảng thời gian chính xác 0.5(s) bằng timer 0, ghi chú vào chương trình phục vụ ngắt.\n- Sử dụng ngắt tràn Timer 2 để quét LED 7 thanh.\n- Ban đầu số hiển thị là 1234.\n- Ấn nút thứ 1 thì số hiển thị tăng lên 1 đơn vị, nhưng không tăng quá 9999.\n- Ấn nút thứ 2 thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 0.\n- Ấn nút thứ 3 thì số hiển thị sẽ tự động tăng sau mỗi 0.5(s), tăng đến 9999 thì dừng.",
+    "q1_kind": "toggle8_repeat",
+    "q2_kind": "timer_auto_inc"
+  },
+  {
+    "set": 24,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm.\nLập trình chương trình hoạt động như sau:\n- Trạng thái ban đầu LED hiển thị số 5.\n- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, nếu tăng quá 9 thì vòng lại 0.\n- Ấn nút thứ hai thì số hiển thị giảm 1 đơn vị, nếu giảm dưới 0 thì vòng lên 9.\n- Nếu ấn và giữ nút thì số thay đổi liên tục sau mỗi 300(ms).",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 3 nút bấm nối vào PB0, PB1, PB2.\nThiết lập Timer 0 hoạt động ở chế độ Normal với tần số 31250Hz, kích hoạt ngắt tràn. Thiết lập ngắt ngoài 0 hoạt động ở chế độ Falling Edge.\nLập trình chương trình hoạt động như sau:\n- Tính toán để tạo khoảng thời gian chính xác 0.5(s) bằng timer.\n- Ban đầu số hiển thị là 1111.\n- Ấn nút thứ nhất thì số hiển thị sẽ tăng 1 đơn vị, nhưng không tăng quá 9000.\n- Ấn nút thứ hai thì số hiển thị sẽ giảm 1 đơn vị, nhưng không giảm dưới 1000.\n- Nếu ấn và giữ nút thì số hiển thị tăng liên tục.\n- Ấn nút thứ 3 thì số hiển thị sẽ tự động tăng sau mỗi 0.5(s), nếu tăng quá 9000 thì vòng lại 1000.\n- Ngắt ngoài 0 được kích hoạt thì số hiển thị dừng lại.",
+    "q1_kind": "single_repeat",
+    "q2_kind": "timer_start"
+  },
+  {
+    "set": 25,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 8 nút bấm nối vào PORTA.\nLập trình chương trình hoạt động như sau:\n- Khi ấn một nút bất kỳ thì LED tương ứng sẽ đảo trạng thái (LED đang sáng sẽ tắt và ngược lại).\n- Chờ nhả nút ra mới thực hiện đảo trạng thái lần tiếp theo.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0, PA1. Thiết lập ngắt ngoài 1 hoạt động ở chế độ Falling Edge.\nLập trình chương trình hoạt động như sau:\n- Ban đầu số hiển thị là 0.\n- Ngắt ngoài được kích hoạt thì số hiển thị sẽ tự động tăng sau một khoảng thời gian t, tăng quá 9000 thì vòng về 0.\n- Ấn nút thứ nhất thì sẽ tăng thời gian tăng số này, nhưng không tăng quá 2 (s).\n- Ấn nút thứ hai thì sẽ giảm thời gian tăng số này, nhưng không giảm dưới 100 (ms).",
+    "q1_kind": "toggle8",
+    "q2_kind": "auto_period_inc"
+  },
+  {
+    "set": 26,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PA1 và PA2.\nLập trình chương trình hoạt động như sau:\n- Trạng thái ban đầu chỉ có LED thứ 2 sáng.\n- Ấn nút thứ nhất thì LED sáng sẽ di chuyển sang phải.\n- Ấn nút thứ hai thì LED sáng sẽ di chuyển sang trái.\n- Nếu LED di chuyển đến cuối cùng thì sẽ vòng lại.\n- Nếu ấn và giữ nút thì LED sẽ di chuyển với chu kì là 200 (ms).",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PB0, PB1. Thiết lập 2 ngắt ngoài 0 và 1 hoạt động ở chế độ Falling Edge\nLập trình chương trình hoạt động như sau:\n- Ban đầu số hiển thị là 0.\n- Ngắt ngoài 0 được kích hoạt thì số hiển thị sẽ tự động giảm sau một khoảng thời gian t, giảm dưới 0 thì vòng lên 9999.\n- Ngắt ngoài 1 được kích hoạt thì số hiển thị sẽ dừng lại.\n- Ấn nút thứ nhất thì sẽ tăng thời gian tăng số này, nhưng không tăng quá 2(s).\n- Ấn nút thứ hai thì sẽ giảm thời gian tăng số này, nhưng không giảm dưới 100 (ms).",
+    "q1_kind": "shift_buttons",
+    "q2_kind": "auto_period_dec"
+  },
+  {
+    "set": 27,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PB6 và PB7.\nLập trình chương trình hoạt động như sau:\n- Trạng thái ban đầu 8 LED nhấp nháy xen kẽ với chu kì 100 (ms).\n- Ấn nút thứ nhất thì tăng tần số nhấp nháy.\n- Ấn nút thứ hai thì giảm tần số nhấp nháy.\n- Nếu ấn và giữ nút thì tần số sẽ tiếp tục thay đổi mà không phải chờ nhả nút ra.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 1 nút bấm nối vào PA0. Lập trình chương trình hoạt động như sau:\n- Thiết lập 2 ngắt ngoài 0 và 1 hoạt động ở chế độ Falling Edge.\n- Ban đầu số hiển thị là 5555.\n- Ấn nút lần thứ nhất thì số hiển thị sẽ tự động tăng sau mỗi khoảng thời gian t, ấn nút lần thứ 2 thì số hiển thị sẽ dừng lại.\n- Nếu ngắt ngoài 0 được kích hoạt thì sẽ tăng khoảng thời gian t, nhưng không tăng quá 3 (s).\n- Nếu ngắt ngoài 1 được kích hoạt thì sẽ giảm khoảng thời gian t, nhưng không giảm dưới 500 (ms).",
+    "q1_kind": "blink",
+    "q2_kind": "toggle_period"
+  },
+  {
+    "set": 28,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 9 nút bấm.\nLập trình chương trình hoạt động như sau:\n\t- Khi ấn 1 nút thì LED sẽ hiển thị số tương ứng từ 1- 9.\n\t- Khi không ấn nút nào thì LED hiển thị số 0.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo điện áp từ 0-5V và đo nhiệt độ bằng cảm biến nhiệt LM35, hiển thị giá trị lên 3 LED 7 thanh, sử dụng 2 nút bấm để điều khiển, sử dụng 4 LED đơn để hiển thị chế độ.\nLập trình chương trình hoạt động như sau:\n- Đo điện áp bằng chân ADC0, đo nhiệt độ bằng chân ADC1.\n- Ban đầu LED hiển thị giá trị điện áp với độ chính xác 0.1V.\n- Khi ấn nút thứ nhất thì sẽ chuyển đổi giữa đo điện áp và đo nhiệt độ, sử dụng LED 1 và LED 2 để cho biết đang ở chế độ đo nào.\n- Khi ấn nút thứ hai thì sẽ chuyển đổi độ chính xác khi đo điện áp giữa 0.1V và 0.01V, sử dụng LED 3 và LED 4 để cho biết đang ở độ chính xác nào.",
+    "q1_kind": "keypad9",
+    "q2_kind": "adc_lm35"
+  },
+  {
+    "set": 29,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PC0 và PC1.\nLập trình chương trình hoạt động như sau:\n\t- LED sẽ chạy từ trái sang phải, sau khi hết hàng LED sẽ vòng lại LED đầu tiên.\n\t- Ấn nút thứ nhất thì sẽ tăng tốc độ chạy LED, nhưng không nhanh quá 100Hz.\n\t- Ấn nút thứ hai thì sẽ giảm tốc độ chạy LED, nhưng không chậm dưới 4Hz.\n\t- Ấn và giữ nút thì tốc độ thay đổi liên tục.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo điện áp từ 0 - 5V nhận lệnh điều khiển từ 1 nút bấm nối vào PD0, hiển thị giá trị lên LED 7 thanh 4 số, sử dụng thêm một con LED 7 thanh hiển thị số.\nLập trình chương trình hoạt động như sau:\n- Ban đầu đo điện áp, hiển thị điện áp với độ chính xác 0.1V.\n- Ấn nút lần thứ nhất thì chuyển đổi sang độ chính xác 0.01V, ấn lần tiếp theo thì chuyển sang độ chính xác 0.1V,...\n- Giá trị trên con LED 7 thanh đơn hiển thị 1 nếu đang đo độ chính xác là 0.1V, hiển thị 2 nếu đang đo độ chính xác là 0.01V.",
+    "q1_kind": "chase_fast",
+    "q2_kind": "adc_precision"
+  },
+  {
+    "set": 30,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 10 nút bấm.\nLập trình chương trình hoạt động như sau:\n\t- Khi ấn một nút bất kỳ thì LED 7 thanh sẽ hiển thị số tương ứng với nút đó.\n\t- Nhả nút ra thì số hiển thị giữ nguyên.\n\t- Khi ấn đồng thời nhiều nút thì LED 7 thanh sẽ hiển thị số lớn hơn.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo 3 tín hiệu điện áp từ 0-5V đưa vào 3 chân ADC0, ADC1, ADC2 nhận lệnh điều khiển từ 1 nút bấm nối vào PD0, hiển thị giá trị lên LED 7 thanh 4 số, sử dụng thêm một con LED 7 thanh hiển thị số.\nLập trình chương trình hoạt động như sau:\n- Ban đầu đo điện áp tại đầu vào chân ADC0, hiển thị với độ chính xác 0.1V.\n- Ấn nút thì chuyển sang đo điện áp tại chân ADC tiếp theo (0 –> 1 –> 2 –> 0).\n- Giá trị trên con LED 7 thanh đơn hiển thị 0 nếu đang đo điện áp tại chân ADC0, hiển thị 1 nếu đang đo điện áp tại chân ADC1,hiển thị 2 nếu đang đo điện áp tại chân ADC2.\n- Yêu cầu chờ nhả nút ra mới chuyển đổi lần tiếp theo.",
+    "q1_kind": "keypad10",
+    "q2_kind": "adc_channel_button"
+  },
+  {
+    "set": 31,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm.\nLập trình chương trình hoạt động như sau:\n\t- Trạng thái ban đầu LED hiển thị số 5\n\t- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, nếu tăng quá 9 thì vòng lại 0.\n\t- Ấn nút thứ hai thì số hiển thị giảm 1 đơn vị, nếu giảm dưới 0 thì vòng lên 9.\n\t- Yêu cầu chờ nhả nút ra để thực hiện lệnh tăng/giảm lượt tiếp theo.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1. Lập trình chương trình hoạt động như sau:\n- Thiết lập ngắt ngoài 0 hoạt động ở chế độ Falling Edge.\n- Ban đầu số hiển thị là 10.\n- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, nhưng không tăng quá 9999.\n- Ấn nút thứ 2 thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 1.\n- Ấn và giữ nút thì số thay đổi liên tục.\n- Nếu ngắt ngoài 0 được kích hoạt thì số hiển thị tự động giảm dần sau mỗi 1 (s).\n- Nếu số hiển thị giảm đến 0 thì reset về 10 và dừng lại.",
+    "q1_kind": "single_wrap",
+    "q2_kind": "countdown10"
+  },
+  {
+    "set": 32,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PC0 và PC1.\nLập trình chương trình hoạt động như sau:\n- LED sẽ chạy từ phải sang trái, sau khi hết hàng LED sẽ vòng lại LED đầu tiên\n- Ấn nút thứ nhất thì sẽ tăng tốc độ chạy LED, nhưng không nhanh quá 25Hz.\n- Ấn nút thứ hai thì sẽ giảm tốc độ chạy LED, nhưng không chậm dưới 5Hz.\n- Ấn và giữ nút thì tốc độ thay đổi liên tục.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo 3 tín hiệu điện áp từ 0 - 5V đưa vào 3 chân ADC0, ADC1, ADC2, hiển thị giá trị lên LED 7 thanh 4 số, sử dụng thêm một con LED 7 thanh hiển thị số.\nLập trình chương trình hoạt động như sau:\n- Thiết lập ngắt ngoài 1 hoạt động ở chế độ Rising Edge.\n- Ban đầu đo điện áp tại đầu vào chân ADC0, hiển thị với độ chính xác 0.1V.\n- Ngắt ngoài được kích hoạt thì chuyển sang đo điện áp tại chân ADC tiếp theo (0 –> 1 –> 2 –> 0).\n- Giá trị trên con LED 7 thanh đơn hiển thị 0 nếu đang đo điện áp tại chân ADC0, hiển thị 1 nếu đang đo điện áp tại chân ADC1,hiển thị 2 nếu đang đo điện áp tại chân ADC2.",
+    "q1_kind": "chase_slow",
+    "q2_kind": "adc_channel_irq"
+  },
+  {
+    "set": 33,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm.\nLập trình chương trình hoạt động như sau:\n- Trạng thái ban đầu LED hiển thị số 6\n- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, tăng tối đa đến 9 thì dừng lại.\n- Ấn nút thứ hai thì số hiển thị giảm 1 đơn vị, giảm tối thiểu đến 0 thì dừng lại.\n- Yêu cầu chờ nhả nút ra để thực hiện lệnh tăng/giảm lượt tiếp theo.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 3 nút bấm nối vào PB0, PB1, PB2.\nThiết lập Timer 0 hoạt động ở chế độ Normal với tần số 31250Hz, kích hoạt ngắt tràn.\nThiết lập Timer 2 hoạt động ở chế độ Normal, kích hoạt ngắt tràn.\nLập trình chương trình hoạt động như sau:\n- Tính toán để tạo khoảng thời gian chính xác 0.5(s) bằng timer 0, ghi chú vào chương trình phục vụ ngắt.\n- Sử dụng ngắt tràn Timer 2 để quét LED 7 thanh.\n- Ban đầu số hiển thị là 1234.\n- Ấn nút thứ 1 thì số hiển thị tăng lên 1 đơn vị, nhưng không tăng quá 9999.\n- Ấn nút thứ 2 thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 0.\n- Ấn nút thứ 3 thì số hiển thị sẽ tự động giảm sau mỗi 0.5(s), giảm đến 0 thì dừng.",
+    "q1_kind": "single_clamp",
+    "q2_kind": "timer_auto_dec"
+  },
+  {
+    "set": 34,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1.\nLập trình chương trình hoạt động như sau:\n\t- Trạng thái ban đầu LED hiển thị số 0.\n\t- Ấn nút thứ nhất thì số hiển thị sẽ tự động tăng với chu kì 100 (ms).\n\t- Ấn nút thứ hai thì số hiển thị sẽ dừng lại.\n\t- Nếu số tăng quá 9 thì sẽ vòng lại 0.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm.\nThiết lập Timer 0 hoạt động ở chế độ Normal với tần số 125kHz, kích hoạt ngắt tràn.\nThiết lập ngắt ngoài 0 và 1 hoạt động ở chế độ Falling Edge.\nTính toán để tạo khoảng thời gian chính xác 0.5(s) bằng timer, ghi chú vào chương trình phục vụ ngắt.\n- Ban đầu số hiển thị là 8000\n- Ngắt ngoài 0 được kích hoạt thì số hiển thị sẽ tăng 1 đơn vị, nhưng không tăng quá 8888.\n- Ngắt ngoài 1 được kích hoạt thì số hiển thị sẽ giảm 1 đơn vị, nhưng không giảm dưới 8000.\n- Ấn nút thứ 1 thì số hiển thị sẽ tự động tăng sau mỗi 0.5(s), nếu tăng quá 9000 thì vòng lại 1000. Ấn nút thứ 2 thì số hiển thị sẽ dừng lại.",
+    "q1_kind": "single_auto_inc",
+    "q2_kind": "timer_ext_limits"
+  },
+  {
+    "set": 35,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1.\nLập trình chương trình hoạt động như sau:\n- Số hiển thị sẽ tự động tăng từ 0 đến 9 sau một khoảng thời gian t.\n- Nếu số tăng quá 9 thì sẽ vòng lại 0.\n- Ấn nút thứ nhất thì sẽ làm tăng thời gian tăng số, nhưng không tăng quá 2 (s).\n- Ấn nút thứ hai thì sẽ làm giảm thời gian tăng số, nhưng không giảm dưới 200 (ms).",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 3 nút bấm nối vào PB0, PB1, PB2.\nThiết lập Timer 0 hoạt động ở chế độ Normal với tần số 125kHz, kích hoạt ngắt tràn.\nThiết lập Timer 2 hoạt động ở chế độ Normal, kích hoạt ngắt tràn.\nLập trình chương trình hoạt động như sau:\n- Tính toán để tạo khoảng thời gian chính xác 0.5(s) bằng timer 0, ghi chú vào chương trình phục vụ ngắt.\n- Sử dụng ngắt tràn Timer 2 để quét LED 7 thanh.\n- Ban đầu số hiển thị là 1234.\n- Ấn nút thứ 1 thì số hiển thị tăng lên 1 đơn vị, nhưng không tăng quá 9999.\n- Ấn nút thứ 2 thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 0.\n- Ấn nút thứ 3 thì số hiển thị sẽ tự động tăng sau mỗi 0.5(s), tăng đến 9999 dừng",
+    "q1_kind": "single_period",
+    "q2_kind": "timer_auto_inc"
+  },
+  {
+    "set": 36,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1.\nLập trình chương trình hoạt động như sau:\n- Trạng thái ban đầu LED hiển thị số 9.\n- Ấn nút thứ nhất thì số hiển thị sẽ tự động giảm với chu kì 300 (ms).\n- Ấn nút thứ hai thì số hiển thị sẽ dừng lại.\n- Nếu số giảm dưới 0 thì sẽ vòng lại 9.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 3 nút bấm nối vào PB0, PB1, PB2.\nThiết lập Timer 0 hoạt động ở chế độ Normal với tần số 31250Hz, kích hoạt ngắt tràn\nThiết lập ngắt ngoài 0 hoạt động ở chế độ Falling Edge.\nLập trình chương trình hoạt động như sau:\n- Tính toán để tạo khoảng thời gian chính xác 0.5(s) bằng timer, ghi chú vào chương trình phục vụ ngắt.\n- Ban đầu số hiển thị là 1111.\n- Ấn nút thứ nhất thì số hiển thị sẽ tăng 1 đơn vị, nhưng không tăng quá 9000.\n- Ấn nút thứ hai thì số hiển thị sẽ giảm 1 đơn vị, nhưng không giảm dưới 1000.\n- Nếu ấn và giữ nút thì số hiển thị tăng liên tục.\n- Ấn nút thứ 3 thì số hiển thị sẽ tự động tăng sau mỗi 0.5(s), nếu tăng quá 9000 thì vòng lại 1000.\n- Ngắt ngoài 0 được kích hoạt thì số hiển thị dừng lại.",
+    "q1_kind": "single_auto_dec",
+    "q2_kind": "timer_start"
+  },
+  {
+    "set": 37,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 8 nút bấm nối vào PORTA.\nLập trình chương trình hoạt động như sau:\n- Khi ấn một nút bất kỳ thì LED tương ứng sẽ đảo trạng thái (LED đang sáng sẽ tắt và ngược lại).\n- Nếu ấn và giữ nút thì LED đảo trạng thái liên tục với chu kì 300 (ms).",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PD6 và PD7. Thiết lập ngắt ngoài 0 hoạt động ở chế độ Falling Edge\nLập trình chương trình hoạt động như sau:\n- Ban đầu số hiển thị là 1000.\n- Ấn nút thứ nhất thì số hiển thị tăng lên 1 đơn vị, nhưng không tăng quá 9999.\n- Ấn nút thứ hai thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 0.\n- Yêu cầu chờ nhả nút ra để thực hiện lệnh tăng/giảm lượt tiếp theo.\n- Ngắt ngoài 0 được kích hoạt thì reset số hiển thị về 1000.",
+    "q1_kind": "toggle8_repeat",
+    "q2_kind": "reset1000"
+  },
+  {
+    "set": 38,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 2 nút bấm.\nLập trình chương trình hoạt động như sau:\n\t- Trạng thái ban đầu LED hiển thị số 5.\n\t- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, nếu tăng quá 9 thì vòng lại 0.\n\t- Ấn nút thứ hai thì số hiển thị giảm 1 đơn vị, nếu giảm dưới 0 thì vòng lên 9.\n\t- Nếu ấn và giữ nút thì số thay đổi liên tục sau mỗi 300 (ms).",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PB0, PB1. Thiết lập ngắt ngoài 1 hoạt động ở chế độ Rising Edge.\nLập trình chương trình hoạt động như sau:\n- Ban đầu số hiển thị là 6000.\n- Ấn nút thứ nhất thì số hiển thị sẽ tự động giảm với chu kì 1(s), sau khi giảm đến 0 sẽ dừng lại.\n- Ấn nút thứ hai thì số hiển thị sẽ dừng lại.\n- Ngắt ngoài 1 được kích hoạt thì reset số hiển thị về 6000.",
+    "q1_kind": "single_repeat",
+    "q2_kind": "count6000"
+  },
+  {
+    "set": 39,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 8 nút bấm nối vào PORTA.\nLập trình chương trình hoạt động như sau:\n- Khi ấn một nút bất kỳ thì LED tương ứng sẽ đảo trạng thái (LED đang sáng sẽ tắt và ngược lại).\n- Chờ nhả nút ra mới thực hiện đảo trạng thái lần tiếp theo.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo 3 tín hiệu điện áp từ 0-5V đưa vào 3 chân ADC0, ADC1, ADC2 nhận lệnh điều khiển từ 1 nút bấm nối vào PD0, hiển thị giá trị lên LED 7 thanh 4 số, sử dụng thêm một con LED 7 thanh hiển thị số.\nLập trình chương trình hoạt động như sau:\n- Ban đầu đo điện áp tại đầu vào chân ADC0, hiển thị với độ chính xác 0.1V.\n- Ấn nút thì chuyển sang đo điện áp tại chân ADC tiếp theo (0 –> 1 –> 2 –> 0).\n- Giá trị trên con LED 7 thanh đơn hiển thị 0 nếu đang đo điện áp tại chân ADC0, hiển thị 1 nếu đang đo điện áp tại chân ADC1,hiển thị 2 nếu đang đo điện áp tại chân ADC2.\n- Yêu cầu chờ nhả nút ra mới chuyển đổi lần tiếp theo.",
+    "q1_kind": "toggle8",
+    "q2_kind": "adc_channel_button"
+  },
+  {
+    "set": 40,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PA1 và PA2.\nLập trình chương trình hoạt động như sau:\n- Trạng thái ban đầu chỉ có LED thứ 2 sáng.\n- Ấn nút thứ nhất thì LED sáng sẽ di chuyển sang phải.\n- Ấn nút thứ hai thì LED sáng sẽ di chuyển sang trái.\n- Nếu LED di chuyển đến cuối cùng thì sẽ vòng lại.\n- Nếu ấn và giữ nút thì LED sẽ di chuyển với chu kì là 200 (ms).",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1. Lập trình chương trình hoạt động như sau:\n- Thiết lập ngắt ngoài 0 hoạt động ở chế độ Falling Edge.\n- Ban đầu số hiển thị là 10.\n- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, nhưng không tăng quá 9999.\n- Ấn nút thứ 2 thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 1.\n- Ấn và giữ nút thì số thay đổi liên tục.\n- Nếu ngắt ngoài 0 được kích hoạt thì số hiển thị tự động giảm dần sau mỗi 1 (s).\n- Nếu số hiển thị giảm đến 0 thì reset về 10 và dừng lại.",
+    "q1_kind": "shift_buttons",
+    "q2_kind": "countdown10"
+  },
+  {
+    "set": 41,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PB6 và PB7.\nLập trình chương trình hoạt động như sau:\n- Trạng thái ban đầu 8 LED nhấp nháy xen kẽ với chu kì 100 (ms).\n- Ấn nút thứ nhất thì tăng tần số nhấp nháy.\n- Ấn nút thứ hai thì giảm tần số nhấp nháy.\n- Nếu ấn và giữ nút thì tần số sẽ tiếp tục thay đổi mà không phải chờ nhả nút ra.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo 3 tín hiệu điện áp từ 0 -5V đưa vào 3 chân ADC0, ADC1, ADC2, hiển thị giá trị lên LED 7 thanh 4 số, sử dụng thêm một con LED 7 thanh hiển thị số.\nLập trình chương trình hoạt động như sau:\n- Thiết lập ngắt ngoài 1 hoạt động ở chế độ Rising Edge.\n- Ban đầu đo điện áp tại đầu vào chân ADC0, hiển thị với độ chính xác 0.1V.\n- Ngắt ngoài được kích hoạt thì chuyển sang đo điện áp tại chân ADC tiếp theo (0 –> 1 –> 2 –> 0).\n- Giá trị trên con LED 7 thanh đơn hiển thị 0 nếu đang đo điện áp tại chân ADC0, hiển thị 1 nếu đang đo điện áp tại chân ADC1,hiển thị 2 nếu đang đo điện áp tại chân ADC2.",
+    "q1_kind": "blink",
+    "q2_kind": "adc_channel_irq"
+  },
+  {
+    "set": 42,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị một LED 7 thanh và nhận lệnh điều khiển từ 9 nút bấm.\nLập trình chương trình hoạt động như sau:\n\t- Khi ấn 1 nút thì LED sẽ hiển thị số tương ứng từ 1- 9.\n\t- Khi không ấn nút nào thì LED hiển thị số 0.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 3 nút bấm nối vào PB0, PB1, PB2.\nThiết lập Timer 0 hoạt động ở chế độ Normal với tần số 31250Hz, kích hoạt ngắt tràn.\nThiết lập Timer 2 hoạt động ở chế độ Normal, kích hoạt ngắt tràn.\nLập trình chương trình hoạt động như sau:\n- Tính toán để tạo khoảng thời gian chính xác 0.5(s) bằng timer 0, ghi chú vào chương trình phục vụ ngắt.\n- Sử dụng ngắt tràn Timer 2 để quét LED 7 thanh.\n- Ban đầu số hiển thị là 1234.\n- Ấn nút thứ 1 thì số hiển thị tăng lên 1 đơn vị, nhưng không tăng quá 9999.\n- Ấn nút thứ 2 thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 0.\n- Ấn nút thứ 3 thì số hiển thị sẽ tự động giảm sau mỗi 0.5(s), giảm đến 0 thì dừng.",
+    "q1_kind": "keypad9",
+    "q2_kind": "timer_auto_dec"
+  },
+  {
+    "set": 43,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 8 nút bấm nối vào PORTA.\nLập trình chương trình hoạt động như sau:\n- Khi ấn một nút bất kỳ thì LED tương ứng sẽ đảo trạng thái (LED đang sáng sẽ tắt và ngược lại)\n- Chờ nhả nút ra mới thực hiện đảo trạng thái lần tiếp theo.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để đo 3 tín hiệu điện áp từ 0-5V đưa vào 3 chân ADC0, ADC1, ADC2 nhận lệnh điều khiển từ 1 nút bấm nối vào PD0, hiển thị giá trị lên LED 7 thanh 4 số, sử dụng thêm một con LED 7 thanh hiển thị số.\nLập trình chương trình hoạt động như sau:\n- Ban đầu đo điện áp tại đầu vào chân ADC0, hiển thị với độ chính xác 0.1V\n- Ấn nút thì chuyển sang đo điện áp tại chân ADC tiếp theo (0 –> 1 –> 2 –> 0)\n- Giá trị trên con LED 7 thanh đơn hiển thị 0 nếu đang đo điện áp tại chân ADC0, hiển thị 1 nếu đang đo điện áp tại chân ADC1, hiển thị 2 nếu đang đo điện áp tại chân ADC2.\n- Yêu cầu chờ nhả nút ra mới chuyển đổi lần tiếp theo.",
+    "q1_kind": "toggle8",
+    "q2_kind": "adc_channel_button"
+  },
+  {
+    "set": 44,
+    "q1": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển 8 LED đơn nối vào PORTD và nhận lệnh điều khiển từ 2 nút bấm nối vào PA1 và PA2.\nLập trình chương trình hoạt động như sau:\n- Trạng thái ban đầu chỉ có LED thứ 2 sáng\n- Ấn nút thứ nhất thì LED sáng sẽ di chuyển sang phải\n- Ấn nút thứ hai thì LED sáng sẽ di chuyển sang trái\n- Nếu LED di chuyển đến cuối cùng thì sẽ vòng lại\n- Nếu ấn và giữ nút thì LED sẽ di chuyển với chu kì là 200ms.",
+    "q2": "Thiết kế mạch sử dụng vi điều khiển Atmega16 để điều khiển hiển thị 4 LED 7 thanh bằng phương pháp quét và nhận lệnh điều khiển từ 2 nút bấm nối vào PA0 và PA1. Lập trình chương trình hoạt động như sau:\n- Thiết lập ngắt ngoài 0 hoạt động ở chế độ Falling Edge\n- Ban đầu số hiển thị là 10\n- Ấn nút thứ nhất thì số hiển thị tăng 1 đơn vị, nhưng không tăng quá 9999\n- Ấn nút thứ 2 thì số hiển thị giảm 1 đơn vị, nhưng không giảm dưới 1\n- Ấn và giữ nút thì số thay đổi liên tục\n- Nếu ngắt ngoài 0 được kích hoạt thì số hiển thị tự động giảm dần sau mỗi 1(s)\n- Nếu số hiển thị giảm đến 0 thì reset về 10 và dừng lại",
+    "q1_kind": "shift_buttons",
+    "q2_kind": "countdown10"
+  }
+]
