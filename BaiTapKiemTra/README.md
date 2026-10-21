@@ -6,6 +6,8 @@ Nguồn tải: https://docs.google.com/document/d/1mh2D75xNiBHrTItzRjf3hnnpLvd3h
 
 ## Tạo project
 
+Toàn bộ 88 file theo định dạng của 25 bài `bai_*.c` ở thư mục gốc: giữ nguyên đầy đủ khối chú thích CodeWizardAVR (kể cả thông số chip, clock, memory model, RAM và stack), khai báo biến/hàm trước `void main(void)`, rồi toàn bộ 15 mục khởi tạo ngoại vi và `while (1)` ngay trong `main`. Có đủ cả phần cấu hình các ngoại vi không sử dụng. Các bit cấu hình dùng tên thanh ghi/bit như mẫu; giá trị GPIO, timer, ngắt và ADC vẫn theo từng câu. Không còn hàm bọc `initialize()` hoặc `tick_1ms()` trong mã nạp MCU.
+
 Dùng **CodeVisionAVR, ATmega16, clock 8 MHz**. Mỗi project chỉ thêm **một** file `cau_1.c` hoặc `cau_2.c`. Mỗi file đã có đầy đủ khởi tạo, hàm, chương trình chính và ngắt cần dùng; không cần thêm file C nào khác. Đây là mã CodeVisionAVR (`mega16.h`, `delay.h`, `interrupt`, `#asm`), không biên dịch trực tiếp bằng avr-gcc hoặc Arduino IDE.
 
 LED đơn và các đoạn LED anode chung sáng mức 0. Chọn digit sáng mức 1 qua mạch driver phù hợp; không nối trực tiếp dòng tổng của nhiều đoạn qua chân MCU. Nối điện trở hạn dòng cho từng đoạn/LED. Nút nhấn kéo xuống GND; pull-up nội đã bật cho đầu vào số.
@@ -70,7 +72,7 @@ python BaiTapKiemTra/tests/check_solutions.py
 python kiemtra.py
 ```
 
-Bộ kiểm thử mới xác nhận đủ 88 file, thích nghi cú pháp riêng của CodeVision, biên dịch từng chương trình kiểm thử bằng GCC (`-Wall -Wextra -Werror`, UndefinedBehaviorSanitizer), rồi chạy kiểm tra hành vi trên mã C thật: khởi tạo, nút, giới hạn, ngắt, 0.5 s theo tick timer, quét Timer 2, các tổ hợp nút số và toàn bộ 1024 mã ADC. Chỉ thay đổi cú pháp vendor và phần chuyển đổi ADC phần cứng để chạy được trên máy tính. Thư viện tiêu chuẩn Python là đủ; không cần package ngoài. File tạm được tạo ngoài checkout và tự xóa.
+Bộ kiểm thử mới xác nhận đủ 88 file, thích nghi cú pháp riêng của CodeVision, biên dịch từng chương trình kiểm thử bằng GCC (`-Wall -Wextra -Werror`, UndefinedBehaviorSanitizer), rồi chạy kiểm tra hành vi trên mã C thật: khởi tạo, nút, giới hạn, ngắt, 0.5 s theo tick timer, quét Timer 2, các tổ hợp nút số và toàn bộ 1024 mã ADC. Bộ chạy trích trực tiếp phần khởi tạo và thân `while (1)` trong `main`, tương tự `kiemtra.py` của 25 bài gốc. Khi chạy trên host, bộ thích nghi thay cú pháp vendor và chuyển đổi ADC phần cứng, đồng thời ánh xạ tên biến/hàm tiếng Việt về tên cũ của các khẳng định kiểm thử; không thay thuật toán của lời giải. Thư viện tiêu chuẩn Python là đủ; không cần package ngoài. File tạm được tạo ngoài checkout và tự xóa.
 
 Đã chạy **88/88** chương trình mới và **25/25** bài thực hành cũ thành công. **Chưa biên dịch bằng CodeVisionAVR, chưa tạo HEX, chưa mô phỏng Proteus.** Kiểm thử host không xác nhận kích thước kiểu `int` của AVR, mã máy, dòng điện, đấu dây, chống dội vật lý hoặc thời gian trên MCU. Để hoàn tất kiểm chứng phần cứng: biên dịch từng file bằng CodeVisionAVR, nạp HEX vào ATmega16 8 MHz với fuse JTAG phù hợp, rồi thử các yêu cầu tương ứng và đo thời gian.
 

@@ -1,7 +1,8 @@
 """Compile and execute host adaptations of all 88 independent AVR solutions.
 
-Only vendor syntax and hardware ADC conversion are adapted. These checks execute
-real initialization, button filtering, timer/interrupt handlers and display code;
+The real main setup and loop are extracted as in the original practice runner.
+Vendor syntax, identifiers and ADC peripherals are adapted for the host. Checks
+execute initialization, button filtering, interrupt handlers and display code;
 they do not establish native CodeVision compilation or physical timing.
 """
 from pathlib import Path
@@ -167,6 +168,60 @@ handle_buttons(1);assert(!temperature_mode);''',
 }
 
 
+# The host assertions retain their original vocabulary; only C identifiers are adapted.
+FORMAT_NAMES = {'BUTTON_COUNT': 'SO_NUT',
+ 'REPEAT_MS': 'LAP_NUT_MS',
+ 'REPEAT_MASK': 'MAT_NA_LAP',
+ 'DIGIT_COUNT': 'SO_LED',
+ 'segments': 'ma7doan',
+ 'value': 'dem',
+ 'period_ms': 'thoigian',
+ 'elapsed_ms': 'dem_ms',
+ 'running': 'chay',
+ 'display_digits': 'sohienthi',
+ 'display_dp': 'daucham',
+ 'scan_index': 'vitriquet',
+ 'channel': 'kenh',
+ 'precision': 'dophangiai',
+ 'temperature_mode': 'donhietdo',
+ 'button_state': 'nut_on',
+ 'button_filter': 'locnut',
+ 'button_age': 'giu_ms',
+ 'stable_keys': 'nut_giu',
+ 'raw_buttons': 'docchan',
+ 'sample_buttons': 'docnut',
+ 'change_period': 'doithoigian',
+ 'handle_buttons': 'xulynut',
+ 'advance_time': 'demthoigian',
+ 'render_number': 'capnhatled',
+ 'scan_display': 'quetled',
+ 'read_adc': 'docadc',
+ 'update_measurement': 'docgiatri',
+ 'render_display': 'hienthi',
+ 'update_keypad': 'docphimso'}
+
+# ATmega16 register-bit positions, independent of solution expressions.
+AVR_BITS = {
+    'WGM00':6, 'COM01':5, 'COM00':4, 'WGM01':3, 'CS02':2, 'CS01':1, 'CS00':0,
+    'COM1A1':7, 'COM1A0':6, 'COM1B1':5, 'COM1B0':4, 'WGM11':1, 'WGM10':0,
+    'ICNC1':7, 'ICES1':6, 'WGM13':4, 'WGM12':3, 'CS12':2, 'CS11':1, 'CS10':0,
+    'AS2':3, 'PWM2':6, 'COM21':5, 'COM20':4, 'CTC2':3, 'CS22':2, 'CS21':1, 'CS20':0,
+    'OCIE2':7, 'TOIE2':6, 'TICIE1':5, 'OCIE1A':4, 'OCIE1B':3, 'TOIE1':2, 'OCIE0':1, 'TOIE0':0,
+    'ISC11':3, 'ISC10':2, 'ISC01':1, 'ISC00':0, 'INT1':7, 'INT0':6, 'INT2':5,
+    'INTF1':7, 'INTF0':6, 'INTF2':5,
+    'RXCIE':7, 'TXCIE':6, 'UDRIE':5, 'RXEN':4, 'TXEN':3, 'UCSZ2':2, 'RXB8':1, 'TXB8':0,
+    'ACD':7, 'ACBG':6, 'ACO':5, 'ACI':4, 'ACIE':3, 'ACIC':2, 'ACIS1':1, 'ACIS0':0, 'ACME':3,
+    'ADEN':7, 'ADSC':6, 'ADATE':5, 'ADIF':4, 'ADIE':3, 'ADPS2':2, 'ADPS1':1, 'ADPS0':0,
+    'REFS1':7, 'REFS0':6, 'ADLAR':5, 'MUX4':4, 'MUX3':3, 'MUX2':2, 'MUX1':1, 'MUX0':0,
+    'SPIE':7, 'SPE':6, 'DORD':5, 'MSTR':4, 'CPOL':3, 'CPHA':2, 'SPR1':1, 'SPR0':0,
+    'TWEA':6, 'TWSTA':5, 'TWSTO':4, 'TWEN':2, 'TWIE':0,
+}
+for port in 'ABCD':
+    for bit in range(8):
+        AVR_BITS[f'DD{port}{bit}'] = bit
+        AVR_BITS[f'PORT{port}{bit}'] = bit
+
+
 def pin_setter(kind, question):
     if question == 1:
         if kind.startswith('chase_'):
@@ -213,7 +268,7 @@ def main():
     assert actual == expected, f'Expected all 88 solutions; missing {len(expected-actual)}, extra {len(actual-expected)}'
     gcc = shutil.which('gcc')
     assert gcc, 'GCC must be on PATH'
-    registers = 'PORTA PORTB PORTC PORTD DDRA DDRB DDRC DDRD PINA PINB PINC PIND SREG TCCR0 TCNT0 TCCR2 TCNT2 TIMSK MCUCR MCUCSR GICR GIFR ADMUX ADCSRA'.split()
+    registers = 'PORTA PORTB PORTC PORTD DDRA DDRB DDRC DDRD PINA PINB PINC PIND SREG TCCR0 TCNT0 OCR0 TCCR1A TCCR1B TCNT1H TCNT1L ICR1H ICR1L OCR1AH OCR1AL OCR1BH OCR1BL ASSR TCCR2 TCNT2 OCR2 TIMSK MCUCR MCUCSR GICR GIFR UCSRB ACSR SFIOR ADMUX ADCSRA SPCR TWCR'.split()
     with tempfile.TemporaryDirectory(prefix='dc2dt29_') as tmp:
         tmp = Path(tmp)
         for row in ROWS:
@@ -221,16 +276,33 @@ def main():
                 path = ROOT / f"de_{row['set']:02d}" / f'cau_{q}.c'
                 code = path.read_text()
                 kind = row[f'q{q}_kind']
+                assert code.split('#include', 1)[0] == (ROOT.parent / 'bai_06.c').read_text().split('#include', 1)[0], path
+                assert '// Declare your global variables here\n' in code, path
+                assert 'void initialize(void)' not in code and 'void tick_1ms(void)' not in code, path
+                main_text = code.split('void main(void)\n{\n', 1)[1]
+                init_text, loop_text = main_text.split('while (1)\n{\n', 1)
+                template = (ROOT.parent / 'bai_06.c').read_text()
+                sections = re.findall(r'^    // ([^\n]*initialization[^\n]*)', template, re.M)
+                actual_sections = re.findall(r'^    // ([^\n]*initialization[^\n]*)', init_text, re.M)
+                assert [section for section in actual_sections if section in sections] == sections, path
+                # Extract the real setup and while-loop body, as in the original 25-problem runner.
+                globals_text = code.split('void main(void)\n{\n', 1)[0]
+                loop_body = loop_text.rsplit('\n}\n}', 1)[0]
+                code = (globals_text + '\nvoid initialize(void)\n{\n' + init_text +
+                        '\n}\nvoid tick_1ms(void)\n{\n' + loop_body + '\n}\n')
+                reverse_names = {native: old for old, native in FORMAT_NAMES.items()}
+                code = re.sub(r'\b(' + '|'.join(reverse_names) + r')\b',
+                              lambda m: reverse_names[m.group()], code)
                 code = re.sub(r'^#include <(?:mega16|delay)\.h>\s*$', '', code, flags=re.M)
                 code = re.sub(r'interrupt \[[^\]]+\]\s*', '', code)
                 code = re.sub(r'#asm\("(?:cli|sei)"\)', '', code)
-                code = code.replace('void main(void)', 'void firmware(void)')
                 # Replace only the peripheral conversion; all scaling remains real.
                 if kind.startswith('adc_'):
                     code, n = re.subn(r'unsigned int read_adc\(unsigned char input\)\s*\{.*?\n\}',
                         'unsigned int read_adc(unsigned char input) { return adc_samples[input]; }', code, flags=re.S)
                     assert n == 1
                 prelude = '#include <assert.h>\n#include <stdio.h>\n'
+                prelude += '\n'.join(f'#define {name} {bit}' for name, bit in AVR_BITS.items()) + '\n'
                 prelude += '\n'.join(f'unsigned char {r}={255 if r.startswith("PIN") else 0};' for r in registers)
                 prelude += '\nunsigned int ADCW,adc_samples[3];\nvoid delay_ms(unsigned int ms){(void)ms;}\nvoid delay_us(unsigned int us){(void)us;}\n'
                 timer_ms = 4 if kind in ('timer_auto_dec', 'timer_start') else 2
@@ -274,6 +346,7 @@ assert(value==wanted);initialize();'''
 int main(void){{unsigned int i,j,wanted;(void)i;(void)j;(void)wanted;
 MCUCSR=0x5A;initialize();assert(MCUCSR==0x5A);
 {gpio}
+assert(TCCR1A==0 && TCCR1B==0 && UCSRB==0 && SPCR==0 && TWCR==0 && ACSR==128);
 {debounce}
 {checks}
 {extras}

@@ -1,158 +1,272 @@
-/****
- * DC2DT29 - De 07, Cau 1. Kind: single_period
- * ATmega16, 8 MHz, CodeVisionAVR. Compile ONLY this file in its project.
- * Source wording: ../problems.json, set 7, q1.
- * Common-anode segments active LOW; digit enables active HIGH.
- * See ../README.md for pin assignments, defaults, JTAG fuse and test limits.
- * Unspecified choices are documented in README.md; original wording is retained.
- ****/
+/*******************************************************
+This program was created by the
+CodeWizardAVR V3.12 Advanced
+Automatic Program Generator
+© Copyright 1998-2014 Pavel Haiduc, HP InfoTech s.r.l.
+http://www.hpinfotech.com
+
+Project :
+Version :
+Date    : 8/24/2026
+Author  :
+Company :
+Comments:
+
+Chip type               : ATmega16
+Program type            : Application
+AVR Core Clock frequency: 8.000000 MHz
+Memory model            : Small
+External RAM size       : 0
+Data Stack size         : 256
+*******************************************************/
+
 #include <mega16.h>
 #include <delay.h>
 
-#define BUTTON_COUNT 2
-#define REPEAT_MS 200
-#define REPEAT_MASK 3U
-#define DIGIT_COUNT 4
-unsigned char segments[10] = {0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};
-volatile unsigned int value = 0;
-volatile unsigned int period_ms = 1000, elapsed_ms;
-volatile unsigned char running = 1;
-unsigned char display_digits[4], display_dp, scan_index;
-volatile unsigned char channel;
-unsigned char precision, temperature_mode;
+// Declare your global variables here
+// DC2DT29 - De 07, Cau 1. Kind: single_period
+// Mot file cau_1.c hoac cau_2.c cho moi project. Xem ../README.md.
+unsigned char trangthai_ngat;
+unsigned int nhan;
+#define SO_NUT 2
+#define LAP_NUT_MS 200
+#define MAT_NA_LAP 3U
+#define SO_LED 4
+unsigned char ma7doan[10] =
+{
+    0xC0, 0xF9, 0xA4, 0xB0, 0x99,
+    0x92, 0x82, 0xF8, 0x80, 0x90
+};
+volatile unsigned int dem = 0;
+volatile unsigned int thoigian = 1000, dem_ms;
+volatile unsigned char chay = 1;
+unsigned char sohienthi[4], daucham, vitriquet;
+volatile unsigned char kenh;
+unsigned char dophangiai, donhietdo;
 
-unsigned int raw_buttons(void)
+unsigned int docchan(void)
 {
     return (unsigned char)~PINA & 3U;
 }
 
 /* Active-low buttons: 20 consecutive 1 ms samples; independent debounce.
-   A held key repeats only when REPEAT_MS is nonzero. */
-unsigned char button_state[10], button_filter[10];
-unsigned int button_age[10];
-unsigned int stable_keys;
-unsigned int sample_buttons(void)
+   A held key repeats only when LAP_NUT_MS is nonzero. */
+unsigned char nut_on[10], locnut[10];
+unsigned int giu_ms[10];
+unsigned int nut_giu;
+unsigned int docnut(void)
 {
-#if BUTTON_COUNT > 0
+#if SO_NUT > 0
     unsigned char i;
     unsigned int raw, bit, events;
-    raw = raw_buttons();
+    raw = docchan();
     events = 0;
-    for (i = 0; i < BUTTON_COUNT; ++i)
+    for (i = 0; i < SO_NUT; ++i)
     {
         bit = 1U << i;
-        if (((raw & bit) != 0) != button_state[i])
+        if (((raw & bit) != 0) != nut_on[i])
         {
-            if (++button_filter[i] >= 20)
+            if (++locnut[i] >= 20)
             {
-                button_filter[i] = 0;
-                button_state[i] = (raw & bit) != 0;
-                button_age[i] = 0;
-                if (button_state[i]) events |= bit;
+                locnut[i] = 0;
+                nut_on[i] = (raw & bit) != 0;
+                giu_ms[i] = 0;
+                if (nut_on[i]) events |= bit;
             }
         }
         else
         {
-            button_filter[i] = 0;
-#if REPEAT_MS > 0
-            if (button_state[i] && (REPEAT_MASK & bit))
+            locnut[i] = 0;
+#if LAP_NUT_MS > 0
+            if (nut_on[i] && (MAT_NA_LAP & bit))
             {
-                if (++button_age[i] >= REPEAT_MS)
+                if (++giu_ms[i] >= LAP_NUT_MS)
                 {
-                    button_age[i] = 0;
+                    giu_ms[i] = 0;
                     events |= bit;
                 }
             }
 #endif
         }
     }
-    stable_keys = 0;
-    for (i = 0; i < BUTTON_COUNT; ++i)
-        if (button_state[i]) stable_keys |= 1U << i;
+    nut_giu = 0;
+    for (i = 0; i < SO_NUT; ++i)
+        if (nut_on[i]) nut_giu |= 1U << i;
     return events;
 #else
     return 0;
 #endif
 }
 
-void change_period(signed char direction)
+void doithoigian(signed char direction)
 {
     if (direction > 0)
     {
-        if (period_ms <= 1900) period_ms += 100;
-        else period_ms = 2000;
+        if (thoigian <= 1900) thoigian += 100;
+        else thoigian = 2000;
     }
     else
     {
-        if (period_ms >= 300) period_ms -= 100;
-        else period_ms = 200;
+        if (thoigian >= 300) thoigian -= 100;
+        else thoigian = 200;
     }
     /* Preserve phase: repeated speed changes must not starve movement. */
 }
 
-void handle_buttons(unsigned int keys)
+void xulynut(unsigned int keys)
 {
-    if (keys == 1) change_period(1);
-    if (keys == 2) change_period(-1);
+    if (keys == 1) doithoigian(1);
+    if (keys == 2) doithoigian(-1);
 }
 
-void advance_time(unsigned int milliseconds)
+void demthoigian(unsigned int milliseconds)
 {
-    if (!running) { elapsed_ms = 0; return; }
-    elapsed_ms += milliseconds;
-    while (running && elapsed_ms >= period_ms)
+    if (!chay) { dem_ms = 0; return; }
+    dem_ms += milliseconds;
+    while (chay && dem_ms >= thoigian)
     {
-        elapsed_ms -= period_ms;
-        value = (value + 1) % 10;
+        dem_ms -= thoigian;
+        dem = (dem + 1) % 10;
     }
 }
 
-void render_display(void)
+void hienthi(void)
 {
-    PORTC = segments[value];
-}
-
-void tick_1ms(void)
-{
-    unsigned char saved_sreg;
-    unsigned int events;
-    /* Atomic access to shared 16-bit counters and the scan buffer on an 8-bit MCU. */
-    saved_sreg = SREG;
-    #asm("cli")
-    events = sample_buttons();
-    handle_buttons(events);
-    advance_time(1);
-    render_display();
-    SREG = saved_sreg;
-}
-
-void initialize(void)
-{
-    unsigned char i;
-    #asm("cli")
-    DDRA = 0x00; PORTA = 0xFF;
-    DDRB = 0x00; PORTB = 0xFF;
-    DDRC = 0xFF; PORTC = 0xFF;
-    DDRD = 0x00; PORTD = 0xFF;
-    value = 0; period_ms = 1000; elapsed_ms = 0; running = 1;
-    stable_keys = 0; display_dp = 0; scan_index = 0;
-    channel = 0; precision = 0; temperature_mode = 0;
-    for (i = 0; i < 10; ++i)
-    {
-        button_state[i] = 0; button_filter[i] = 0; button_age[i] = 0;
-    }
-    TCCR0 = 0; TCCR2 = 0; TIMSK = 0;
-    MCUCR = 0x00; GICR = 0x00; GIFR = 0x00;
-    render_display();
-    #asm("sei")
+    PORTC = ma7doan[dem];
 }
 
 void main(void)
 {
-    initialize();
-    while (1)
+    unsigned char i;
+
+    #asm("cli")
+
+    // Input/Output Ports initialization
+    // Port A initialization
+    // Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
+    DDRA=(0<<DDA7) | (0<<DDA6) | (0<<DDA5) | (0<<DDA4) | (0<<DDA3) | (0<<DDA2) | (0<<DDA1) | (0<<DDA0);
+    // State: Bit7=P Bit6=P Bit5=P Bit4=P Bit3=P Bit2=P Bit1=P Bit0=P
+    PORTA=(1<<PORTA7) | (1<<PORTA6) | (1<<PORTA5) | (1<<PORTA4) | (1<<PORTA3) | (1<<PORTA2) | (1<<PORTA1) | (1<<PORTA0);
+
+    // Port B initialization
+    // Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
+    DDRB=(0<<DDB7) | (0<<DDB6) | (0<<DDB5) | (0<<DDB4) | (0<<DDB3) | (0<<DDB2) | (0<<DDB1) | (0<<DDB0);
+    // State: Bit7=P Bit6=P Bit5=P Bit4=P Bit3=P Bit2=P Bit1=P Bit0=P
+    PORTB=(1<<PORTB7) | (1<<PORTB6) | (1<<PORTB5) | (1<<PORTB4) | (1<<PORTB3) | (1<<PORTB2) | (1<<PORTB1) | (1<<PORTB0);
+
+    // Port C initialization
+    // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
+    DDRC=(1<<DDC7) | (1<<DDC6) | (1<<DDC5) | (1<<DDC4) | (1<<DDC3) | (1<<DDC2) | (1<<DDC1) | (1<<DDC0);
+    // State: Bit7=1 Bit6=1 Bit5=1 Bit4=1 Bit3=1 Bit2=1 Bit1=1 Bit0=1
+    PORTC=(1<<PORTC7) | (1<<PORTC6) | (1<<PORTC5) | (1<<PORTC4) | (1<<PORTC3) | (1<<PORTC2) | (1<<PORTC1) | (1<<PORTC0);
+
+    // Port D initialization
+    // Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
+    DDRD=(0<<DDD7) | (0<<DDD6) | (0<<DDD5) | (0<<DDD4) | (0<<DDD3) | (0<<DDD2) | (0<<DDD1) | (0<<DDD0);
+    // State: Bit7=P Bit6=P Bit5=P Bit4=P Bit3=P Bit2=P Bit1=P Bit0=P
+    PORTD=(1<<PORTD7) | (1<<PORTD6) | (1<<PORTD5) | (1<<PORTD4) | (1<<PORTD3) | (1<<PORTD2) | (1<<PORTD1) | (1<<PORTD0);
+
+    // Timer/Counter 0 initialization
+    // Clock source: System Clock
+    // Clock value: Timer 0 Stopped
+    // Mode: Normal top=0xFF
+    // OC0 output: Disconnected
+    TCCR0=(0<<WGM00) | (0<<COM01) | (0<<COM00) | (0<<WGM01) | (0<<CS02) | (0<<CS01) | (0<<CS00);
+    TCNT0=0x00;
+    OCR0=0x00;
+
+    // Timer/Counter 1 initialization
+    // Clock source: System Clock
+    // Clock value: Timer1 Stopped
+    // Mode: Normal top=0xFFFF
+    // OC1A output: Disconnected
+    // OC1B output: Disconnected
+    // Noise Canceler: Off
+    // Input Capture on Falling Edge
+    // Timer1 Overflow Interrupt: Off
+    // Input Capture Interrupt: Off
+    // Compare A Match Interrupt: Off
+    // Compare B Match Interrupt: Off
+    TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
+    TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (0<<WGM12) | (0<<CS12) | (0<<CS11) | (0<<CS10);
+    TCNT1H=0x00;
+    TCNT1L=0x00;
+    ICR1H=0x00;
+    ICR1L=0x00;
+    OCR1AH=0x00;
+    OCR1AL=0x00;
+    OCR1BH=0x00;
+    OCR1BL=0x00;
+
+    // Timer/Counter 2 initialization
+    // Clock source: System Clock
+    // Clock value: Timer2 Stopped
+    // Mode: Normal top=0xFF
+    // OC2 output: Disconnected
+    ASSR=0<<AS2;
+    TCCR2=(0<<PWM2) | (0<<COM21) | (0<<COM20) | (0<<CTC2) | (0<<CS22) | (0<<CS21) | (0<<CS20);
+    TCNT2=0x00;
+    OCR2=0x00;
+
+    // Timer(s)/Counter(s) Interrupt(s) initialization
+    TIMSK=(0<<OCIE2) | (0<<TOIE2) | (0<<TICIE1) | (0<<OCIE1A) | (0<<OCIE1B) | (0<<TOIE1) | (0<<OCIE0) | (0<<TOIE0);
+
+    // External Interrupt(s) initialization
+    // INT0: Off
+    // INT1: Off
+    // INT2: Off
+    MCUCR=(0<<ISC11) | (0<<ISC10) | (0<<ISC01) | (0<<ISC00);
+    GIFR=(0<<INTF1) | (0<<INTF0) | (0<<INTF2);
+    GICR=(0<<INT1) | (0<<INT0) | (0<<INT2);
+
+    // USART initialization
+    // USART disabled
+    UCSRB=(0<<RXCIE) | (0<<TXCIE) | (0<<UDRIE) | (0<<RXEN) | (0<<TXEN) | (0<<UCSZ2) | (0<<RXB8) | (0<<TXB8);
+
+    // Analog Comparator initialization
+    // Analog Comparator: Off
+    // The Analog Comparator's positive input is
+    // connected to the AIN0 pin
+    // The Analog Comparator's negative input is
+    // connected to the AIN1 pin
+    ACSR=(1<<ACD) | (0<<ACBG) | (0<<ACO) | (0<<ACI) | (0<<ACIE) | (0<<ACIC) | (0<<ACIS1) | (0<<ACIS0);
+    SFIOR=(0<<ACME);
+
+    // ADC initialization
+    // ADC disabled
+    ADCSRA=(0<<ADEN) | (0<<ADSC) | (0<<ADATE) | (0<<ADIF) | (0<<ADIE) | (0<<ADPS2) | (0<<ADPS1) | (0<<ADPS0);
+
+    // SPI initialization
+    // SPI disabled
+    SPCR=(0<<SPIE) | (0<<SPE) | (0<<DORD) | (0<<MSTR) | (0<<CPOL) | (0<<CPHA) | (0<<SPR1) | (0<<SPR0);
+
+    // TWI initialization
+    // TWI disabled
+    TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
+
+    // Program variables initialization
+    dem = 0; thoigian = 1000; dem_ms = 0; chay = 1;
+    nut_giu = 0; daucham = 0; vitriquet = 0;
+    kenh = 0; dophangiai = 0; donhietdo = 0;
+    for (i = 0; i < 10; ++i)
     {
-        delay_ms(1);
-        tick_1ms();
+        nut_on[i] = 0; locnut[i] = 0; giu_ms[i] = 0;
     }
+    hienthi();
+
+    // Global interrupt enable
+    #asm("sei")
+
+while (1)
+{
+    delay_ms(1);
+    /* Atomic access to shared 16-bit counters and the scan buffer on an 8-bit MCU. */
+    trangthai_ngat = SREG;
+    #asm("cli")
+    nhan = docnut();
+    xulynut(nhan);
+    demthoigian(1);
+    hienthi();
+    SREG = trangthai_ngat;
+}
 }
