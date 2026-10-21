@@ -1,6 +1,6 @@
 ## Đề cương DC2DT29
 
-Đã bổ sung [đề cương gốc và 88 lời giải cho 44 đề](dc2dt29/README.md), mỗi câu có một file CodeVisionAVR độc lập. Xem hướng dẫn đấu chân, các giả định và kiểm thử trong thư mục đó.
+Đã bổ sung [đề cương gốc và 88 lời giải cho 44 đề](BaiTapKiemTra/README.md), mỗi câu có một file CodeVisionAVR độc lập. Xem hướng dẫn đấu chân, các giả định và kiểm thử trong thư mục đó.
 
 ## Bộ bài thực hành ban đầu
 

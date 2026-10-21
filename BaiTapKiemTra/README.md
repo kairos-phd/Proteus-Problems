@@ -66,7 +66,7 @@ Những câu **không yêu cầu timer** dùng vòng chính `delay_ms(1)` cộng
 Từ thư mục gốc repository:
 
 ```sh
-python dc2dt29/tests/check_solutions.py
+python BaiTapKiemTra/tests/check_solutions.py
 python kiemtra.py
 ```
 
