@@ -24,61 +24,19 @@ Data Stack size         : 256
 #include <delay.h>
 
 // Declare your global variables here
-// de_06 - Cau 1. Xem ../README.md.
-unsigned int dem = 0, dem_ms = 0;
-unsigned char chay = 0;
-unsigned char ma7doan[10] =
-{
-    0xC0, 0xF9, 0xA4, 0xB0, 0x99,
-    0x92, 0x82, 0xF8, 0x80, 0x90
-};
-unsigned int nhan;
-unsigned int nut_on;
-unsigned char locnut[2];
-
-/* Loc tung nut trong 20 ms; nut giu chi lap khi de yeu cau. */
-unsigned int docnut(void)
-{
-    unsigned char i;
-    unsigned int nut, bit, canh = 0;
-    nut = (unsigned char)~PINA & 3U;
-    for (i = 0; i < 2; i++)
-    {
-        bit = 1U << i;
-        if ((nut ^ nut_on) & bit)
-        {
-            if (++locnut[i] == 20)
-            {
-                locnut[i] = 0;
-                nut_on ^= bit;
-                if (nut_on & bit) canh |= bit;
-            }
-        }
-        else locnut[i] = 0;
-    }
-    return canh;
-}
-
-void xulynut(unsigned int keys)
-{
-    if (keys & 1) { chay = 1; dem_ms = 0; }
-    if (keys & 2) { chay = 0; dem_ms = 0; }
-}
-
-void demthoigian(unsigned int milliseconds)
-{
-    if (!chay) { dem_ms = 0; return; }
-    dem_ms += milliseconds;
-    while (chay && dem_ms >= 100)
-    {
-        dem_ms -= 100;
-        dem = (dem + 1) % 10;
-    }
-}
 
 void main(void)
 {
-    unsigned char i;
+    unsigned char ma7doan[10] =
+    {
+        0xC0, 0xF9, 0xA4, 0xB0, 0x99,
+        0x92, 0x82, 0xF8, 0x80, 0x90
+    };
+    unsigned char so = 0;
+    unsigned char chay = 0;
+    unsigned int dem = 0;
+    unsigned char nut1 = 0;
+    unsigned char nut2 = 0;
 
     #asm("cli")
 
@@ -186,21 +144,45 @@ void main(void)
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
     // Program variables initialization
-    dem = 0; dem_ms = 0;
-    chay = 0;
-    nut_on = 0;
-    for (i = 0; i < 2; i++) locnut[i] = 0;
-    PORTC = ma7doan[dem];
+    PORTC = ma7doan[so];
 
     // Global interrupt enable
     #asm("sei")
 
 while (1)
 {
+    if (PINA.0 == 0 && nut1 == 0)
+    {
+        chay = 1;
+        dem = 0;
+        nut1 = 1;
+    }
+
+    if (PINA.0 == 1) nut1 = 0;
+
+    if (PINA.1 == 0 && nut2 == 0)
+    {
+        chay = 0;
+        dem = 0;
+        nut2 = 1;
+    }
+
+    if (PINA.1 == 1) nut2 = 0;
+
     delay_ms(1);
-    nhan = docnut();
-    xulynut(nhan);
-    demthoigian(1);
-    PORTC = ma7doan[dem];
+
+    if (chay)
+    {
+        dem += 1;
+        if (dem >= 100)
+        {
+            dem = 0;
+            so++;
+            if (so > 9) so = 0;
+        }
+    }
+    else dem = 0;
+
+    PORTC = ma7doan[so];
 }
 }

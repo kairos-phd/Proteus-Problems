@@ -24,112 +24,66 @@ Data Stack size         : 256
 #include <delay.h>
 
 // Declare your global variables here
-// de_22 - Cau 2. Xem ../README.md.
-volatile unsigned int dem = 8000, dem_ms = 0;
-volatile unsigned char chay = 0, vitriquet = 0;
-unsigned char sohienthi[4];
 unsigned char ma7doan[10] =
 {
     0xC0, 0xF9, 0xA4, 0xB0, 0x99,
     0x92, 0x82, 0xF8, 0x80, 0x90
 };
-unsigned char trangthai_ngat;
-unsigned int nhan;
-unsigned int nut_on;
-unsigned char locnut[2];
+unsigned char vitri = 0;
+volatile unsigned int so = 8000;
+volatile unsigned char chay = 0;
+volatile unsigned int dem = 0;
 
-/* Loc tung nut trong 20 ms; nut giu chi lap khi de yeu cau. */
-unsigned int docnut(void)
+void hienthi(unsigned int so, unsigned char cham)
 {
-    unsigned char i;
-    unsigned int nut, bit, canh = 0;
-    nut = (unsigned char)~PINB & 3U;
-    for (i = 0; i < 2; i++)
-    {
-        bit = 1U << i;
-        if ((nut ^ nut_on) & bit)
-        {
-            if (++locnut[i] == 20)
-            {
-                locnut[i] = 0;
-                nut_on ^= bit;
-                if (nut_on & bit) canh |= bit;
-            }
-        }
-        else locnut[i] = 0;
-    }
-    return canh;
-}
-
-void xulynut(unsigned int keys)
-{
-    if (keys & 1) { chay = 1; dem_ms = 0; }
-    if (keys & 2) { chay = 0; dem_ms = 0; }
-}
-
-void demthoigian(unsigned int milliseconds)
-{
-    if (!chay) { dem_ms = 0; return; }
-    dem_ms += milliseconds;
-    while (chay && dem_ms >= 500)
-    {
-        dem_ms -= 500;
-        dem = dem >= 9000 ? 1000 : dem + 1;
-    }
-}
-
-void quetled(void)
-{
-    unsigned char pattern;
-    /* Blank every digit before changing ma7doan to prevent ghosting. */
+    unsigned char i, ma;
+    unsigned int chia = 1000;
+    for (i = 0; i < vitri; i++) chia /= 10;
     PORTA &= 0x0F;
-    pattern = ma7doan[sohienthi[vitriquet]];
-    PORTC = pattern;
-    PORTA |= 1U << (vitriquet + 4);
-    if (++vitriquet >= 4) vitriquet = 0;
+    ma = ma7doan[(so / chia) % 10];
+    if (vitri == cham) ma &= 0x7F;
+    PORTC = ma;
+    PORTA |= (1 << (vitri + 4));
+    vitri++;
+    if (vitri == 4) vitri = 0;
 }
 
-void hienthi(void)
-{
-    unsigned char i;
-    unsigned int number;
-    number = dem;
-    for (i = 4; i > 0; --i)
-    {
-        sohienthi[i-1] = number % 10;
-        number /= 10;
-    }
-}
-
-/* Timer 0 NORMAL mode. F_CPU=8 MHz, prescaler=64.
-   F_timer=125000 Hz, 250 counts/overflow with preload 6.
-   One interrupt is 2 ms; 250 interrupts = 500 ms exactly in timer counts.
-   Add the preload to TCNT0 to compensate ISR entry latency in timer ticks.
-   No delay, ADC, or display multiplexing occurs in this ISR.
-   Timing is nominal: clock accuracy and interrupt latency require Proteus/hardware measurement. */
+/* Timer 0: 125 kHz, 250 dem = 2 ms; 250 ngat = 0.5 s. */
 interrupt [TIM0_OVF] void timer0_overflow(void)
 {
     TCNT0 += 6;
-    demthoigian(2);
+    if (chay)
+    {
+        dem += 2;
+        if (dem >= 500)
+        {
+            dem = 0;
+            so++;
+            if (so > 9000) so = 1000;
+        }
+    }
+    else dem = 0;
 }
 
 interrupt [EXT_INT0] void ext_int0_isr(void)
 {
-    if (dem < 8000) dem = 8000;
-    else if (dem >= 8888) dem = 8888;
-    else ++dem;
+    if (so < 8000) so = 8000;
+    else if (so < 8888) so++;
+    else so = 8888;
 }
 
 interrupt [EXT_INT1] void ext_int1_isr(void)
 {
-    if (dem > 8888) dem = 8888;
-    else if (dem <= 8000) dem = 8000;
-    else --dem;
+    if (so > 8888) so = 8888;
+    else if (so > 8000) so--;
+    else so = 8000;
 }
 
 void main(void)
 {
-    unsigned char i;
+    unsigned char nut1 = 0;
+    unsigned char nut2 = 0;
+    unsigned char trangthai_ngat;
 
     #asm("cli")
 
@@ -236,26 +190,37 @@ void main(void)
     // TWI disabled
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
-    // Program variables initialization
-    dem = 8000; dem_ms = 0;
-    chay = 0; vitriquet = 0;
-    nut_on = 0;
-    for (i = 0; i < 2; i++) locnut[i] = 0;
-    hienthi();
-
     // Global interrupt enable
     #asm("sei")
 
 while (1)
 {
-    delay_ms(1);
-    /* Atomic access to shared 16-bit counters and the scan buffer on an 8-bit MCU. */
     trangthai_ngat = SREG;
+
     #asm("cli")
-    nhan = docnut();
-    xulynut(nhan);
-    hienthi();
-    quetled();
+
+    if (PINB.0 == 0 && nut1 == 0)
+    {
+        chay = 1;
+        dem = 0;
+        nut1 = 1;
+    }
+
+    if (PINB.0 == 1) nut1 = 0;
+
+    if (PINB.1 == 0 && nut2 == 0)
+    {
+        chay = 0;
+        dem = 0;
+        nut2 = 1;
+    }
+
+    if (PINB.1 == 1) nut2 = 0;
+
+    hienthi(so, 255);
+
     SREG = trangthai_ngat;
+
+    delay_ms(1);
 }
 }

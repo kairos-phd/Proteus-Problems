@@ -24,25 +24,18 @@ Data Stack size         : 256
 #include <delay.h>
 
 // Declare your global variables here
-// de_16 - Cau 1. Xem ../README.md.
-unsigned int dem = 0;
-unsigned char ma7doan[10] =
-{
-    0xC0, 0xF9, 0xA4, 0xB0, 0x99,
-    0x92, 0x82, 0xF8, 0x80, 0x90
-};
-
-void docphimso(void)
-{
-    unsigned char i;
-    unsigned int nut;
-    nut = ((unsigned char)~PINA) | (((unsigned int)((unsigned char)~PINB) & 3U) << 8);
-    for (i = 0; i < 10; i++)
-        if (nut & (1U << i)) dem = i;
-}
 
 void main(void)
 {
+    unsigned char ma7doan[10] =
+    {
+        0xC0, 0xF9, 0xA4, 0xB0, 0x99,
+        0x92, 0x82, 0xF8, 0x80, 0x90
+    };
+    unsigned char so = 0;
+    unsigned char i;
+    unsigned int nut;
+
     #asm("cli")
 
     // Input/Output Ports initialization
@@ -149,8 +142,7 @@ void main(void)
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
     // Program variables initialization
-    dem = 0;
-    PORTC = ma7doan[dem];
+    PORTC = ma7doan[so];
 
     // Global interrupt enable
     #asm("sei")
@@ -158,7 +150,11 @@ void main(void)
 while (1)
 {
     delay_ms(1);
-    docphimso();
-    PORTC = ma7doan[dem];
+
+    nut = (unsigned char)~PINA;
+    nut |= ((unsigned int)((unsigned char)~PINB & 3)) << 8;
+    for (i = 0; i < 10; i++)
+        if (nut & (1U << i)) so = i;
+    PORTC = ma7doan[so];
 }
 }

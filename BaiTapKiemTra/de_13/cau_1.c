@@ -24,65 +24,16 @@ Data Stack size         : 256
 #include <delay.h>
 
 // Declare your global variables here
-// de_13 - Cau 1. Xem ../README.md.
-unsigned int dem = 170, thoigian = 50, dem_ms = 0;
-unsigned int nhan;
-unsigned int nut_on;
-unsigned char locnut[2];
-unsigned int giu_ms[2];
-
-/* Loc tung nut trong 20 ms; nut giu chi lap khi de yeu cau. */
-unsigned int docnut(void)
-{
-    unsigned char i;
-    unsigned int nut, bit, canh = 0;
-    nut = ((unsigned char)~PINB >> 6) & 3U;
-    for (i = 0; i < 2; i++)
-    {
-        bit = 1U << i;
-        if ((nut ^ nut_on) & bit)
-        {
-            if (++locnut[i] == 20)
-            {
-                locnut[i] = 0;
-                nut_on ^= bit;
-                giu_ms[i] = 0;
-                if (nut_on & bit) canh |= bit;
-            }
-        }
-        else
-        {
-            locnut[i] = 0;
-            if (nut_on & bit)
-                if (++giu_ms[i] == 200)
-                {
-                    giu_ms[i] = 0;
-                    canh |= bit;
-                }
-        }
-    }
-    return canh;
-}
-
-void xulynut(unsigned int keys)
-{
-    if (keys == 1 && thoigian > 5) thoigian -= 5;
-    if (keys == 2 && thoigian < 1000) thoigian += 5;
-}
-
-void demthoigian(unsigned int milliseconds)
-{
-    dem_ms += milliseconds;
-    while (dem_ms >= thoigian)
-    {
-        dem_ms -= thoigian;
-        dem ^= 0xFF;
-    }
-}
 
 void main(void)
 {
-    unsigned char i;
+    unsigned char led = 0xAA;
+    unsigned int dem = 0;
+    unsigned int t = 50;
+    unsigned char nut1 = 0;
+    unsigned int giu1 = 0;
+    unsigned char nut2 = 0;
+    unsigned int giu2 = 0;
 
     #asm("cli")
 
@@ -190,20 +141,49 @@ void main(void)
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
     // Program variables initialization
-    dem = 170; thoigian = 50; dem_ms = 0;
-    nut_on = 0;
-    for (i = 0; i < 2; i++) { locnut[i] = 0; giu_ms[i] = 0; }
-    PORTD = (unsigned char)dem;
+    PORTD = led;
 
     // Global interrupt enable
     #asm("sei")
 
 while (1)
 {
+    if (PINB.6 == 0 && (nut1 == 0 || giu1 >= 200))
+    {
+        if (t > 5) t -= 5;
+        nut1 = 1;
+        giu1 = 0;
+    }
+
+    if (PINB.6 == 1)
+    {
+        nut1 = 0;
+        giu1 = 0;
+    }
+    if (nut1) giu1++;
+
+    if (PINB.7 == 0 && (nut2 == 0 || giu2 >= 200))
+    {
+        if (t < 1000) t += 5;
+        nut2 = 1;
+        giu2 = 0;
+    }
+
+    if (PINB.7 == 1)
+    {
+        nut2 = 0;
+        giu2 = 0;
+    }
+    if (nut2) giu2++;
+
     delay_ms(1);
-    nhan = docnut();
-    xulynut(nhan);
-    demthoigian(1);
-    PORTD = (unsigned char)dem;
+
+    dem += 1;
+    if (dem >= t)
+    {
+        dem = 0;
+        led = ~led;
+        PORTD = led;
+    }
 }
 }

@@ -24,67 +24,49 @@ Data Stack size         : 256
 #include <delay.h>
 
 // Declare your global variables here
-// de_41 - Cau 2. Xem ../README.md.
-volatile unsigned int dem = 0;
-volatile unsigned char kenh = 0, daucham = 0, vitriquet = 0;
-unsigned char sohienthi[4];
 unsigned char ma7doan[10] =
 {
     0xC0, 0xF9, 0xA4, 0xB0, 0x99,
     0x92, 0x82, 0xF8, 0x80, 0x90
 };
-unsigned char trangthai_ngat;
+unsigned char vitri = 0;
+volatile unsigned char kenh = 0;
 
-void quetled(void)
+void hienthi(unsigned int so, unsigned char cham)
 {
-    unsigned char pattern;
-    /* Blank every digit before changing ma7doan to prevent ghosting. */
+    unsigned char i, ma;
+    unsigned int chia = 1000;
+    for (i = 0; i < vitri; i++) chia /= 10;
     PORTA &= 0x0F;
-    pattern = ma7doan[sohienthi[vitriquet]];
-    if (daucham & (1U << vitriquet)) pattern &= 0x7F;
-    PORTC = pattern;
-    PORTA |= 1U << (vitriquet + 4);
-    if (++vitriquet >= 4) vitriquet = 0;
+    ma = ma7doan[(so / chia) % 10];
+    if (vitri == cham) ma &= 0x7F;
+    PORTC = ma;
+    PORTA |= (1 << (vitri + 4));
+    vitri++;
+    if (vitri == 4) vitri = 0;
 }
 
-unsigned int docadc(unsigned char input)
+unsigned int docadc(unsigned char kenh)
 {
-    /* AVCC = 5 V reference, F_ADC = 8 MHz / 64 = 125 kHz. */
-    ADMUX = 0x40 | input;
+    ADMUX = 0x40 | kenh;
     delay_us(10);
-    ADCSRA |= 0x40;
-    while (ADCSRA & 0x40);
+    ADCSRA |= (1 << ADSC);
+    while (ADCSRA & (1 << ADSC));
     return ADCW;
-}
-
-void docgiatri(void)
-{
-    unsigned int raw;
-    raw = docadc(kenh);
-    dem = (raw * 50UL + 511) / 1023;
-    daucham = 4;
-    PORTB = ma7doan[kenh];
-}
-
-void hienthi(void)
-{
-    unsigned char i;
-    unsigned int number;
-    number = dem;
-    for (i = 4; i > 0; --i)
-    {
-        sohienthi[i-1] = number % 10;
-        number /= 10;
-    }
 }
 
 interrupt [EXT_INT1] void ext_int1_isr(void)
 {
-    kenh = (kenh + 1) % 3;
+    kenh++;
+    if (kenh > 2) kenh = 0;
 }
 
 void main(void)
 {
+    unsigned int so = 0;
+    unsigned int adc;
+    unsigned char trangthai_ngat;
+
     #asm("cli")
 
     // Input/Output Ports initialization
@@ -194,24 +176,22 @@ void main(void)
     // TWI disabled
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
-    // Program variables initialization
-    dem = 0;
-    kenh = 0; daucham = 0; vitriquet = 0;
-    docgiatri();
-    hienthi();
-
     // Global interrupt enable
     #asm("sei")
 
 while (1)
 {
-    delay_ms(1);
-    /* Atomic access to shared 16-bit counters and the scan buffer on an 8-bit MCU. */
     trangthai_ngat = SREG;
+
     #asm("cli")
-    docgiatri();
-    hienthi();
-    quetled();
+
+    adc = docadc(kenh);
+    so = (adc * 50UL + 511) / 1023;
+    PORTB = ma7doan[kenh];
+    hienthi(so, 2);
+
     SREG = trangthai_ngat;
+
+    delay_ms(1);
 }
 }

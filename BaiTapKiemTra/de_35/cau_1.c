@@ -24,70 +24,19 @@ Data Stack size         : 256
 #include <delay.h>
 
 // Declare your global variables here
-// de_35 - Cau 1. Xem ../README.md.
-unsigned int dem = 0, thoigian = 1000, dem_ms = 0;
-unsigned char ma7doan[10] =
-{
-    0xC0, 0xF9, 0xA4, 0xB0, 0x99,
-    0x92, 0x82, 0xF8, 0x80, 0x90
-};
-unsigned int nhan;
-unsigned int nut_on;
-unsigned char locnut[2];
-unsigned int giu_ms[2];
-
-/* Loc tung nut trong 20 ms; nut giu chi lap khi de yeu cau. */
-unsigned int docnut(void)
-{
-    unsigned char i;
-    unsigned int nut, bit, canh = 0;
-    nut = (unsigned char)~PINA & 3U;
-    for (i = 0; i < 2; i++)
-    {
-        bit = 1U << i;
-        if ((nut ^ nut_on) & bit)
-        {
-            if (++locnut[i] == 20)
-            {
-                locnut[i] = 0;
-                nut_on ^= bit;
-                giu_ms[i] = 0;
-                if (nut_on & bit) canh |= bit;
-            }
-        }
-        else
-        {
-            locnut[i] = 0;
-            if (nut_on & bit)
-                if (++giu_ms[i] == 200)
-                {
-                    giu_ms[i] = 0;
-                    canh |= bit;
-                }
-        }
-    }
-    return canh;
-}
-
-void xulynut(unsigned int keys)
-{
-    if (keys == 1 && thoigian < 2000) thoigian += 100;
-    if (keys == 2 && thoigian > 200) thoigian -= 100;
-}
-
-void demthoigian(unsigned int milliseconds)
-{
-    dem_ms += milliseconds;
-    while (dem_ms >= thoigian)
-    {
-        dem_ms -= thoigian;
-        dem = (dem + 1) % 10;
-    }
-}
 
 void main(void)
 {
-    unsigned char i;
+    unsigned char ma7doan[10] =
+    {
+        0xC0, 0xF9, 0xA4, 0xB0, 0x99,
+        0x92, 0x82, 0xF8, 0x80, 0x90
+    };
+    unsigned char so = 0;
+    unsigned int dem = 0;
+    unsigned int t = 1000;
+    unsigned char nut1 = 0;
+    unsigned char nut2 = 0;
 
     #asm("cli")
 
@@ -195,20 +144,39 @@ void main(void)
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
     // Program variables initialization
-    dem = 0; thoigian = 1000; dem_ms = 0;
-    nut_on = 0;
-    for (i = 0; i < 2; i++) { locnut[i] = 0; giu_ms[i] = 0; }
-    PORTC = ma7doan[dem];
+    PORTC = ma7doan[so];
 
     // Global interrupt enable
     #asm("sei")
 
 while (1)
 {
+    if (PINA.0 == 0 && nut1 == 0)
+    {
+        if (t < 2000) t += 100;
+        nut1 = 1;
+    }
+
+    if (PINA.0 == 1) nut1 = 0;
+
+    if (PINA.1 == 0 && nut2 == 0)
+    {
+        if (t > 200) t -= 100;
+        nut2 = 1;
+    }
+
+    if (PINA.1 == 1) nut2 = 0;
+
     delay_ms(1);
-    nhan = docnut();
-    xulynut(nhan);
-    demthoigian(1);
-    PORTC = ma7doan[dem];
+
+    dem += 1;
+    if (dem >= t)
+    {
+        dem = 0;
+        so++;
+        if (so > 9) so = 0;
+    }
+
+    PORTC = ma7doan[so];
 }
 }

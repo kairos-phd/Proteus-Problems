@@ -24,54 +24,14 @@ Data Stack size         : 256
 #include <delay.h>
 
 // Declare your global variables here
-// de_01 - Cau 1. Xem ../README.md.
-unsigned int dem = 7, thoigian = 100, dem_ms = 0;
-unsigned int nhan;
-unsigned int nut_on;
-unsigned char locnut[2];
-
-/* Loc tung nut trong 20 ms; nut giu chi lap khi de yeu cau. */
-unsigned int docnut(void)
-{
-    unsigned char i;
-    unsigned int nut, bit, canh = 0;
-    nut = (unsigned char)~PINC & 3U;
-    for (i = 0; i < 2; i++)
-    {
-        bit = 1U << i;
-        if ((nut ^ nut_on) & bit)
-        {
-            if (++locnut[i] == 20)
-            {
-                locnut[i] = 0;
-                nut_on ^= bit;
-                if (nut_on & bit) canh |= bit;
-            }
-        }
-        else locnut[i] = 0;
-    }
-    return canh;
-}
-
-void xulynut(unsigned int keys)
-{
-    if (keys == 1 && thoigian > 10) thoigian -= 10;
-    if (keys == 2 && thoigian < 250) thoigian += 10;
-}
-
-void demthoigian(unsigned int milliseconds)
-{
-    dem_ms += milliseconds;
-    while (dem_ms >= thoigian)
-    {
-        dem_ms -= thoigian;
-        dem = dem == 0 ? 7 : dem - 1;
-    }
-}
 
 void main(void)
 {
-    unsigned char i;
+    unsigned char led = 0x80;
+    unsigned int dem = 0;
+    unsigned int t = 100;
+    unsigned char nut1 = 0;
+    unsigned char nut2 = 0;
 
     #asm("cli")
 
@@ -179,20 +139,38 @@ void main(void)
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
     // Program variables initialization
-    dem = 7; thoigian = 100; dem_ms = 0;
-    nut_on = 0;
-    for (i = 0; i < 2; i++) locnut[i] = 0;
-    PORTD = (unsigned char)~(1U << dem);
+    PORTD = (unsigned char)~led;
 
     // Global interrupt enable
     #asm("sei")
 
 while (1)
 {
+    if (PINC.0 == 0 && nut1 == 0)
+    {
+        if (t > 10) t -= 10;
+        nut1 = 1;
+    }
+
+    if (PINC.0 == 1) nut1 = 0;
+
+    if (PINC.1 == 0 && nut2 == 0)
+    {
+        if (t < 250) t += 10;
+        nut2 = 1;
+    }
+
+    if (PINC.1 == 1) nut2 = 0;
+
     delay_ms(1);
-    nhan = docnut();
-    xulynut(nhan);
-    demthoigian(1);
-    PORTD = (unsigned char)~(1U << dem);
+
+    dem += 1;
+    if (dem >= t)
+    {
+        dem = 0;
+        led = led >> 1;
+        if (led == 0) led = 0x80;
+        PORTD = (unsigned char)~led;
+    }
 }
 }

@@ -24,104 +24,43 @@ Data Stack size         : 256
 #include <delay.h>
 
 // Declare your global variables here
-// de_09 - Cau 2. Xem ../README.md.
-unsigned int dem = 0;
-unsigned char dophangiai = 0, donhietdo = 0, daucham = 0, vitriquet = 0;
-unsigned char sohienthi[3];
 unsigned char ma7doan[10] =
 {
     0xC0, 0xF9, 0xA4, 0xB0, 0x99,
     0x92, 0x82, 0xF8, 0x80, 0x90
 };
-unsigned int nhan;
-unsigned int nut_on;
-unsigned char locnut[2];
+unsigned char vitri = 0;
 
-/* Loc tung nut trong 20 ms; nut giu chi lap khi de yeu cau. */
-unsigned int docnut(void)
+void hienthi(unsigned int so, unsigned char cham)
 {
-    unsigned char i;
-    unsigned int nut, bit, canh = 0;
-    nut = (unsigned char)~PIND & 3U;
-    for (i = 0; i < 2; i++)
-    {
-        bit = 1U << i;
-        if ((nut ^ nut_on) & bit)
-        {
-            if (++locnut[i] == 20)
-            {
-                locnut[i] = 0;
-                nut_on ^= bit;
-                if (nut_on & bit) canh |= bit;
-            }
-        }
-        else locnut[i] = 0;
-    }
-    return canh;
-}
-
-void xulynut(unsigned int keys)
-{
-    if (keys & 1) donhietdo = !donhietdo;
-    if (keys & 2) dophangiai = !dophangiai;
-}
-
-void quetled(void)
-{
-    unsigned char pattern;
-    /* Blank every digit before changing ma7doan to prevent ghosting. */
+    unsigned char i, ma;
+    unsigned int chia = 100;
+    for (i = 0; i < vitri; i++) chia /= 10;
     PORTA &= 0x0F;
-    pattern = ma7doan[sohienthi[vitriquet]];
-    if (daucham & (1U << vitriquet)) pattern &= 0x7F;
-    PORTC = pattern;
-    PORTA |= 1U << (vitriquet + 4);
-    if (++vitriquet >= 3) vitriquet = 0;
+    ma = ma7doan[(so / chia) % 10];
+    if (vitri == cham) ma &= 0x7F;
+    PORTC = ma;
+    PORTA |= (1 << (vitri + 4));
+    vitri++;
+    if (vitri == 3) vitri = 0;
 }
 
-unsigned int docadc(unsigned char input)
+unsigned int docadc(unsigned char kenh)
 {
-    /* AVCC = 5 V reference, F_ADC = 8 MHz / 64 = 125 kHz. */
-    ADMUX = 0x40 | input;
+    ADMUX = 0x40 | kenh;
     delay_us(10);
-    ADCSRA |= 0x40;
-    while (ADCSRA & 0x40);
+    ADCSRA |= (1 << ADSC);
+    while (ADCSRA & (1 << ADSC));
     return ADCW;
-}
-
-void docgiatri(void)
-{
-    unsigned int raw;
-    raw = docadc(donhietdo ? 1 : 0);
-    if (donhietdo)
-    {
-        /* LM35: 10 mV / degree; rounded integer degrees, no decimal point. */
-        dem = (raw * 500UL + 511) / 1023;
-        daucham = 0;
-        PORTB = 0x02;
-    }
-    else
-    {
-        dem = (raw * (dophangiai ? 500UL : 50UL) + 511) / 1023;
-        daucham = dophangiai ? 1 : 2;
-        PORTB = dophangiai ? 0x09 : 0x05;
-    }
-}
-
-void hienthi(void)
-{
-    unsigned char i;
-    unsigned int number;
-    number = dem;
-    for (i = 3; i > 0; --i)
-    {
-        sohienthi[i-1] = number % 10;
-        number /= 10;
-    }
 }
 
 void main(void)
 {
-    unsigned char i;
+    unsigned int so = 0;
+    unsigned int adc;
+    unsigned char chedo = 0, le = 1, cham;
+    unsigned char nut1 = 0;
+    unsigned char nut2 = 0;
 
     #asm("cli")
 
@@ -232,24 +171,53 @@ void main(void)
     // TWI disabled
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
-    // Program variables initialization
-    dem = 0;
-    dophangiai = 0; donhietdo = 0; daucham = 0; vitriquet = 0;
-    nut_on = 0;
-    for (i = 0; i < 2; i++) locnut[i] = 0;
-    docgiatri();
-    hienthi();
-
     // Global interrupt enable
     #asm("sei")
 
 while (1)
 {
+    if (PIND.0 == 0 && nut1 == 0)
+    {
+        chedo = !chedo;
+        nut1 = 1;
+    }
+
+    if (PIND.0 == 1) nut1 = 0;
+
+    if (PIND.1 == 0 && nut2 == 0)
+    {
+        if (le == 1) le = 2;
+        else le = 1;
+        nut2 = 1;
+    }
+
+    if (PIND.1 == 1) nut2 = 0;
+
     delay_ms(1);
-    nhan = docnut();
-    xulynut(nhan);
-    docgiatri();
-    hienthi();
-    quetled();
+
+    if (chedo == 0)
+    {
+        adc = docadc(0);
+        if (le == 1)
+        {
+            so = (adc * 50UL + 511) / 1023;
+            cham = 1;
+            PORTB = 0x05;
+        }
+        else
+        {
+            so = (adc * 500UL + 511) / 1023;
+            cham = 0;
+            PORTB = 0x09;
+        }
+    }
+    else
+    {
+        adc = docadc(1);
+        so = (adc * 500UL + 511) / 1023;
+        cham = 255;
+        PORTB = 0x02;
+    }
+    hienthi(so, cham);
 }
 }

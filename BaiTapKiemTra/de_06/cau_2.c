@@ -24,102 +24,42 @@ Data Stack size         : 256
 #include <delay.h>
 
 // Declare your global variables here
-// de_06 - Cau 2. Xem ../README.md.
-volatile unsigned int dem = 0, thoigian = 1000, dem_ms = 0;
-volatile unsigned char chay = 0, vitriquet = 0;
-unsigned char sohienthi[4];
 unsigned char ma7doan[10] =
 {
     0xC0, 0xF9, 0xA4, 0xB0, 0x99,
     0x92, 0x82, 0xF8, 0x80, 0x90
 };
-unsigned char trangthai_ngat;
-unsigned int nhan;
-unsigned int nut_on;
-unsigned char locnut[2];
-unsigned int giu_ms[2];
+unsigned char vitri = 0;
+volatile unsigned int so = 0;
+volatile unsigned char chay = 0;
+volatile unsigned int dem = 0;
 
-/* Loc tung nut trong 20 ms; nut giu chi lap khi de yeu cau. */
-unsigned int docnut(void)
+void hienthi(unsigned int so, unsigned char cham)
 {
-    unsigned char i;
-    unsigned int nut, bit, canh = 0;
-    nut = (unsigned char)~PINA & 3U;
-    for (i = 0; i < 2; i++)
-    {
-        bit = 1U << i;
-        if ((nut ^ nut_on) & bit)
-        {
-            if (++locnut[i] == 20)
-            {
-                locnut[i] = 0;
-                nut_on ^= bit;
-                giu_ms[i] = 0;
-                if (nut_on & bit) canh |= bit;
-            }
-        }
-        else
-        {
-            locnut[i] = 0;
-            if (nut_on & bit)
-                if (++giu_ms[i] == 200)
-                {
-                    giu_ms[i] = 0;
-                    canh |= bit;
-                }
-        }
-    }
-    return canh;
-}
-
-void xulynut(unsigned int keys)
-{
-    if (keys == 1 && thoigian < 2000) thoigian += 100;
-    if (keys == 2 && thoigian > 100) thoigian -= 100;
-}
-
-void demthoigian(unsigned int milliseconds)
-{
-    if (!chay) { dem_ms = 0; return; }
-    dem_ms += milliseconds;
-    while (chay && dem_ms >= thoigian)
-    {
-        dem_ms -= thoigian;
-        dem = dem >= 9000 ? 0 : dem + 1;
-    }
-}
-
-void quetled(void)
-{
-    unsigned char pattern;
-    /* Blank every digit before changing ma7doan to prevent ghosting. */
+    unsigned char i, ma;
+    unsigned int chia = 1000;
+    for (i = 0; i < vitri; i++) chia /= 10;
     PORTA &= 0x0F;
-    pattern = ma7doan[sohienthi[vitriquet]];
-    PORTC = pattern;
-    PORTA |= 1U << (vitriquet + 4);
-    if (++vitriquet >= 4) vitriquet = 0;
-}
-
-void hienthi(void)
-{
-    unsigned char i;
-    unsigned int number;
-    number = dem;
-    for (i = 4; i > 0; --i)
-    {
-        sohienthi[i-1] = number % 10;
-        number /= 10;
-    }
+    ma = ma7doan[(so / chia) % 10];
+    if (vitri == cham) ma &= 0x7F;
+    PORTC = ma;
+    PORTA |= (1 << (vitri + 4));
+    vitri++;
+    if (vitri == 4) vitri = 0;
 }
 
 interrupt [EXT_INT1] void ext_int1_isr(void)
 {
-    chay = 1; dem_ms = 0;
+    chay = 1;
+    dem = 0;
 }
 
 void main(void)
 {
-    unsigned char i;
+    unsigned int t = 1000;
+    unsigned char nut1 = 0;
+    unsigned char nut2 = 0;
+    unsigned char trangthai_ngat;
 
     #asm("cli")
 
@@ -226,27 +166,47 @@ void main(void)
     // TWI disabled
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
-    // Program variables initialization
-    dem = 0; thoigian = 1000; dem_ms = 0;
-    chay = 0; vitriquet = 0;
-    nut_on = 0;
-    for (i = 0; i < 2; i++) { locnut[i] = 0; giu_ms[i] = 0; }
-    hienthi();
-
     // Global interrupt enable
     #asm("sei")
 
 while (1)
 {
-    delay_ms(1);
-    /* Atomic access to shared 16-bit counters and the scan buffer on an 8-bit MCU. */
     trangthai_ngat = SREG;
+
     #asm("cli")
-    nhan = docnut();
-    xulynut(nhan);
-    demthoigian(1);
-    hienthi();
-    quetled();
+
+    if (PINA.0 == 0 && nut1 == 0)
+    {
+        if (t < 2000) t += 100;
+        nut1 = 1;
+    }
+
+    if (PINA.0 == 1) nut1 = 0;
+
+    if (PINA.1 == 0 && nut2 == 0)
+    {
+        if (t > 100) t -= 100;
+        nut2 = 1;
+    }
+
+    if (PINA.1 == 1) nut2 = 0;
+
+    if (chay)
+    {
+        dem += 1;
+        if (dem >= t)
+        {
+            dem = 0;
+            so++;
+            if (so > 9000) so = 0;
+        }
+    }
+    else dem = 0;
+
+    hienthi(so, 255);
+
     SREG = trangthai_ngat;
+
+    delay_ms(1);
 }
 }

@@ -24,54 +24,12 @@ Data Stack size         : 256
 #include <delay.h>
 
 // Declare your global variables here
-// de_23 - Cau 1. Xem ../README.md.
-unsigned int dem = 0;
-unsigned int nhan;
-unsigned int nut_on;
-unsigned char locnut[8];
-unsigned int giu_ms[8];
-
-/* Loc tung nut trong 20 ms; nut giu chi lap khi de yeu cau. */
-unsigned int docnut(void)
-{
-    unsigned char i;
-    unsigned int nut, bit, canh = 0;
-    nut = (unsigned char)~PINA;
-    for (i = 0; i < 8; i++)
-    {
-        bit = 1U << i;
-        if ((nut ^ nut_on) & bit)
-        {
-            if (++locnut[i] == 20)
-            {
-                locnut[i] = 0;
-                nut_on ^= bit;
-                giu_ms[i] = 0;
-                if (nut_on & bit) canh |= bit;
-            }
-        }
-        else
-        {
-            locnut[i] = 0;
-            if (nut_on & bit)
-                if (++giu_ms[i] == 300)
-                {
-                    giu_ms[i] = 0;
-                    canh |= bit;
-                }
-        }
-    }
-    return canh;
-}
-
-void xulynut(unsigned int keys)
-{
-    dem ^= keys;
-}
 
 void main(void)
 {
-    unsigned char i;
+    unsigned char led = 0x00;
+    unsigned char i, nut[8] = {0};
+    unsigned int giu[8] = {0};
 
     #asm("cli")
 
@@ -179,10 +137,7 @@ void main(void)
     TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
     // Program variables initialization
-    dem = 0;
-    nut_on = 0;
-    for (i = 0; i < 8; i++) { locnut[i] = 0; giu_ms[i] = 0; }
-    PORTD = (unsigned char)~dem;
+    PORTD = (unsigned char)~led;
 
     // Global interrupt enable
     #asm("sei")
@@ -190,8 +145,25 @@ void main(void)
 while (1)
 {
     delay_ms(1);
-    nhan = docnut();
-    xulynut(nhan);
-    PORTD = (unsigned char)~dem;
+
+    for (i = 0; i < 8; i++)
+    {
+        if (PINA & (1 << i))
+        {
+            nut[i] = 0;
+            giu[i] = 0;
+        }
+        else
+        {
+            if (nut[i] == 0 || giu[i] >= 300)
+            {
+                led ^= (1 << i);
+                nut[i] = 1;
+                giu[i] = 0;
+            }
+            giu[i]++;
+        }
+    }
+    PORTD = (unsigned char)~led;
 }
 }
