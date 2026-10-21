@@ -68,8 +68,3 @@ python kiemtra.py
 ```
 
 Chưa biên dịch bằng CodeVisionAVR và chưa mô phỏng trong Proteus. Kiểm thử máy tính không xác nhận thời gian máy thực, chống dội vật lý, tín hiệu ADC hoặc đấu mạch. Thời gian ở các bài quét LED là xấp xỉ vì cộng thời gian delay, chưa bù thời gian thực thi lệnh. Để kiểm tra tiếp: biên dịch từng bài, nạp HEX vào ATmega16 8 MHz, thử các tình huống trong bảng, rồi đo chu kỳ bằng oscilloscope/logic analyzer trong Proteus.
-
-Các file nguồn trên Google Drive được giữ nguyên.
-
-
-Bản sửa này được chuẩn bị từ commit 02fc84ebb030a621a59ab251ae0197ad62e238b9 của kairos-phd/Proteus-Problems. Khi cập nhật GitHub, thay thế 25 file bai_*.c, README.md và kiemtra.py bằng các file cùng tên trong gói; không cần thay đổi file đề bài.
